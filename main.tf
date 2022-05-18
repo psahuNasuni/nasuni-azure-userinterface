@@ -3,9 +3,9 @@ resource "random_id" "unique_SearchUI_id" {
   byte_length = 2
 }
 
-resource "null_resource" "inatall_searchui_web" {
+resource "null_resource" "install_searchui_web" {
   provisioner "local-exec" {
-          command = "./Inatall_SearchUI_Web.sh"
+          command = "./Install_SearchUI_Web.sh"
     }
 # depends_on = []
 }
@@ -22,4 +22,3 @@ resource "null_resource" "update_searchui_js" {
     }
   depends_on = [null_resource.inatall_searchui_web]
 }
-

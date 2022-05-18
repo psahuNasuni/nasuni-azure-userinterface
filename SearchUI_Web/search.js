@@ -1,6 +1,6 @@
 // Update this variable to point to your domain.
-var apigatewayendpoint = 'https://jrol9tzdwc.execute-api.us-east-2.amazonaws.com/dev/search-es';
-var volume_api = 'https://jrol9tzdwc.execute-api.us-east-2.amazonaws.com/dev/es-volume';
+var search_api = "https://nasuni-function-app-aaccb06bbe87.azurewebsites.net/api/SearchFunction"; 
+var volume_api = "https://nasuni-function-app-aaccb06bbe87.azurewebsites.net/api/SearchFunction"; 
 var loadingdiv = $('#loading');
 var noresults = $('#noresults');
 var resultdiv = $('#results');

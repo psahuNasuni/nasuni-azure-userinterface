@@ -7,7 +7,7 @@ resource "null_resource" "install_searchui_web" {
   provisioner "local-exec" {
     command = "./Install_SearchUI_Web.sh"
   }
-  # depends_on = []
+  depends_on = [null_resource.update_searchui_js]
 }
 
 data "azurerm_key_vault" "acs_key_vault" {
@@ -30,5 +30,4 @@ resource "null_resource" "update_searchui_js" {
   provisioner "local-exec" {
     command = "sudo service apache2 restart"
   }
-  depends_on = [null_resource.install_searchui_web]
 }

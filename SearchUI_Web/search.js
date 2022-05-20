@@ -1,8 +1,6 @@
 // Update this variable to point to your domain.
-// search_api = "https://nasuni-function-app-aaccb06bbe87.azurewebsites.net/api/SearchFunction"; 
-// volume_api = "https://nasuni-function-app-aaccb06bbe87.azurewebsites.net/api/SearchFunction"; 
-var search_api = ""; 
-var volume_api = ""; 
+var search_api = 'https://nasuni-function-app-799e1d00e9e6.azurewebsites.net/api/SearchFunction';
+// var volume_api = 'https://jrol9tzdwc.execute-api.us-east-2.amazonaws.com/dev/es-volume';
 var loadingdiv = $('#loading');
 var noresults = $('#noresults');
 var resultdiv = $('#results');
@@ -10,7 +8,7 @@ var searchbox = $('input#search');
 var timer = 0;
 var arr = [];
 var responseArr = [];
-var volume;
+var volume='all';
 var volSelect;
 let pagiResults = 1;
 var dataLen = 3;
@@ -44,34 +42,37 @@ async function search() {
     resultdiv.empty();
     loadingdiv.show();
     // Get the query from the user
-    if (volume == undefined || volume == " ") {
-        console.log("no volume selected");
-        // throw new Error("Something went badly wrong!");
-        loadingdiv.hide();
-        noresults.hide();
-        var content = document.createElement("div");
-        content.innerHTML += "<p class='result-status'><b>No volume was selected</p>";
-        resultdiv.append(content);
-        return;
-    } else if (volume == "all") {
-        volume = "";
-    }
+    // if (volume == undefined || volume == " ") {
+    //     console.log("no volume selected");
+    //     // throw new Error("Something went badly wrong!");
+    //     loadingdiv.hide();
+    //     noresults.hide();
+    //     var content = document.createElement("div");
+    //     content.innerHTML += "<p class='result-status'><b>No volume was selected</p>";
+    //     resultdiv.append(content);
+    //     return;
+    // } else if (volume == "all") {
+    //     volume = "";
+    // }
 
-    let query = searchbox.val() + "~" + volume;
+    // let query = searchbox.val() + "~" + volume;
+    let query = searchbox.val()
     console.log(query);
     // Only run a query if the string contains at least three characters
     if (query.length > 0) {
         // Make the HTTP request with the query as a parameter and wait for the JSON results
-        let response_data = await $.get(search_api, { q: query, size: 25 }, 'json');
-        console.log(response_data);
+        let response_data = await $.get(search_api, { name: query, size: 25 }, 'json');
+        console.log(typeof(response_data));
 
         // Get the part of the JSON response that we care about
         if (response_data.length > 0) {
             loadingdiv.hide();
             noresults.hide();
             // Iterate through the results and write them to HTML
-            resultdiv.append('<p class="result-status">Found ' + response_data.length + ' results.</p>');
-            responseArr = response_data;
+            responseArr = JSON.parse(response_data);
+            resultdiv.append('<p class="result-status">Found ' + Object.keys(responseArr.value).length + ' results.</p>');
+
+            console.log(responseArr)
             appendData(resultdiv, responseArr);
         } else {
             noresults.show();
@@ -93,10 +94,10 @@ async function start() {
         document.getElementById("defVal").innerText = "Select Volume"
     }
     console.log(volSelect)
-    response = await $.get(volume_api, 'json');
-    arr = response.split(",");
-    var chars = ['[', ']', '\\', '"'];
-    replaceAll(chars);
+    // response = await $.get(volume_api, 'json');
+    // arr = response.split(",");
+    // var chars = ['[', ']', '\\', '"'];
+    // replaceAll(chars);
 }
 
 //Filtering and removing extra characters
@@ -152,7 +153,10 @@ function indexChange() {
 
 //Appending all the results to the main resultdiv 
 function appendData(resultdiv, data) {
-    for (var i = index; i < dataLen + index; i++) {
+    // console.log(data.value[0].length)
+    console.log(Object.keys(data.value[0]).length)
+    console.log(typeof(data.value))
+    for (var i = index; i < data.value.length; i++) {
         var link = document.createElement("h5");
         var content = document.createElement("span");
         var resultBox = document.createElement("div");
@@ -160,31 +164,19 @@ function appendData(resultdiv, data) {
         resultBox.classList.add("result-box");
         spanDiv.classList.add("result-content");
 
-        if (data[i].length >= 0) {
+        if (Object.keys(data.value[0]).length >= 0) {
+            console.log(data.value.length)
+            link.innerHTML = "<a class='elasti_link result-title' href=" + data.value[i].File_Location + ">" + data.value[i].File_Location + "</a><br>";
+            resultBox.append(link);
 
-            for (var j = 0; j < data[i].length; j++) {
-                link.innerHTML = "<a class='elasti_link result-title' href=" + data[i][j]._source.access_url + ">" + data[i][j]._source.object_key + "</a>" + "<br>";
-                resultBox.append(link);
-                if (data[i][j].content.length > 0) {
-                    for (var k = 0; k < data[i][j].content.length; k++) {
-                        content.innerHTML += data[i][j].content[k];
 
-                        spanDiv.append(content);
-                        resultBox.append(spanDiv);
-                    }
+                if (data.value[i].content.length > 0) {
+                        content.innerHTML += data.value[i].content;
+
+                    spanDiv.append(content);
+                    resultBox.append(spanDiv);
+                    
                     resultdiv.append(resultBox);
-
-                }
-                // if (data[i][j].highlight.content.length > 0) {
-                //     for (var k = 0; k < data[i][j].highlight.content.length; k++) {
-                //         content.innerHTML += data[i][j].highlight.content[k];
-
-                //         spanDiv.append(content);
-                //         resultBox.append(spanDiv);
-                //     }
-                //     resultdiv.append(resultBox);
-
-                // }
             }
 
             stop();

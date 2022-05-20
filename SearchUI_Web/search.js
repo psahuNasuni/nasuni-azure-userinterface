@@ -175,7 +175,6 @@ function appendData(resultdiv, data) {
 
                     spanDiv.append(content);
                     resultBox.append(spanDiv);
-                    
                     resultdiv.append(resultBox);
             }
 

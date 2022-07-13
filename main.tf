@@ -128,10 +128,10 @@ resource "null_resource" "set_key_vault_env_var" {
 }
 resource "null_resource" "update_searchui_js" {
   provisioner "local-exec" {
-    command = "sed -i 's#var volume_api.*$#var volume_api = \"https://${azurerm_function_app.function_app.default_hostname}/api/search\"; #g' SearchUI_Web/search.js"
+    command = "sed -i 's#var search_api.*$#var search_api = \"https://${azurerm_function_app.function_app.default_hostname}/api/search\"; #g' SearchUI_Web/search.js"
   }
   provisioner "local-exec" {
-    command = "sed -i 's#var search_api.*$#var search_api = \"${data.azurerm_key_vault_secret.kvsecret.value}\"; #g' SearchUI_Web/search.js"
+    command = "sed -i 's#var volume_api.*$#var volume_api = \"${data.azurerm_key_vault_secret.kvsecret.value}\"; #g' SearchUI_Web/search.js"
   }
   depends_on = [null_resource.function_app_publish]
 }

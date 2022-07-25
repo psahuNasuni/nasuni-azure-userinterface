@@ -11,4 +11,10 @@ variable "acs_key_vault" {
   type        = string
   default     = ""
 }
+
+variable "output_path" {
+  type        = string
+  description = "function_path of file where zip file is stored"
+  default     = "./SearchFunction.zip"
+}
 ##################################################################

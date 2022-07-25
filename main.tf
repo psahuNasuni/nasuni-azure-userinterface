@@ -20,11 +20,6 @@ data "azurerm_key_vault" "acs_key_vault" {
   resource_group_name = data.azurerm_resource_group.acs_resource_group.name
 }
 
-data "azurerm_key_vault_secret" "kvsecret" {
-  name         = "search-endpoint-test"
-  key_vault_id = data.azurerm_key_vault.acs_key_vault.id
-}
-
 data "archive_file" "test" {
   type        = "zip"
   source_dir  = "./SearchFunction"
@@ -126,13 +121,12 @@ resource "null_resource" "set_key_vault_env_var" {
     command = "az functionapp config appsettings set --name ${azurerm_function_app.function_app.name} --resource-group ${data.azurerm_resource_group.acs_resource_group.name} --settings AZURE_KEY_VAULT=${data.azurerm_key_vault.acs_key_vault.name}"
   }
 }
+
 resource "null_resource" "update_searchui_js" {
   provisioner "local-exec" {
     command = "sed -i 's#var search_api.*$#var search_api = \"https://${azurerm_function_app.function_app.default_hostname}/api/search\"; #g' SearchUI_Web/search.js"
   }
-  provisioner "local-exec" {
-    command = "sed -i 's#var volume_api.*$#var volume_api = \"${data.azurerm_key_vault_secret.kvsecret.value}\"; #g' SearchUI_Web/search.js"
-  }
+
   depends_on = [null_resource.function_app_publish]
 }
 

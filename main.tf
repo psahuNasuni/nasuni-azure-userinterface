@@ -73,6 +73,9 @@ resource "azurerm_function_app" "function_app" {
   site_config {
     linux_fx_version          = "Python|3.9"
     use_32_bit_worker_process = false
+    cors {
+      allowed_origins = ["*"]
+    }
   }
   storage_account_name       = azurerm_storage_account.storage_account.name
   storage_account_access_key = azurerm_storage_account.storage_account.primary_access_key

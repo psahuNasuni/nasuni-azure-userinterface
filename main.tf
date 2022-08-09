@@ -10,7 +10,7 @@ data "azurerm_resource_group" "acs_resource_group" {
 
 resource "null_resource" "install_searchui_web" {
   provisioner "local-exec" {
-    command = "./Install_SearchUI_Web.sh"
+    command = "./Deploy_SearchUI_Web.sh"
   }
   depends_on = [null_resource.update_searchui_js]
 }
@@ -27,7 +27,7 @@ data "archive_file" "test" {
 }
 
 resource "azurerm_storage_account" "storage_account" {
-  name                     = "nasunist${random_id.unique_SearchUI_id.hex}"
+  name                     = "nasuni-st${random_id.unique_SearchUI_id.hex}"
   resource_group_name      = data.azurerm_resource_group.acs_resource_group.name
   location                 = data.azurerm_resource_group.acs_resource_group.location
   account_tier             = "Standard"

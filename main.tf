@@ -8,8 +8,10 @@ data "azurerm_resource_group" "acs_resource_group" {
   name = var.acs_resource_group
 }
 
-data "azurerm_key_vault" "acs_key_vault" {
-  name                = var.acs_key_vault
+data "azurerm_client_config" "current" {}
+
+data "azurerm_app_configuration" "appconf" {
+  name                = var.acs_admin_app_config_name
   resource_group_name = data.azurerm_resource_group.acs_resource_group.name
 }
 
@@ -96,27 +98,9 @@ resource "null_resource" "function_app_publish" {
 }
 
 
-resource "azurerm_key_vault_access_policy" "func_vault_id_mngmt" {
-  key_vault_id = data.azurerm_key_vault.acs_key_vault.id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_function_app.function_app.identity.0.principal_id
-
-  secret_permissions = [
-    "Get",
-    "List",
-    "Set",
-    "Delete",
-    "Recover",
-    "Backup",
-    "Restore"
-  ]
-
-  depends_on = [data.azurerm_key_vault.acs_key_vault]
-}
-
-resource "null_resource" "set_key_vault_env_var" {
+resource "null_resource" "set_app_config_env_var" {
   provisioner "local-exec" {
-    command = "az functionapp config appsettings set --name ${azurerm_function_app.function_app.name} --resource-group ${data.azurerm_resource_group.acs_resource_group.name} --settings AZURE_KEY_VAULT=${data.azurerm_key_vault.acs_key_vault.name}"
+    command = "az functionapp config appsettings set --name ${azurerm_function_app.function_app.name} --resource-group ${data.azurerm_resource_group.acs_resource_group.name} --settings AZURE_KEY_VAULT=${data.azurerm_app_configuration.appconf.primary_write_key[0].connection_string}"
   }
 }
 

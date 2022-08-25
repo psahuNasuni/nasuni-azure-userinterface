@@ -8,8 +8,6 @@ data "azurerm_resource_group" "acs_resource_group" {
   name = var.acs_resource_group
 }
 
-data "azurerm_client_config" "current" {}
-
 data "azurerm_app_configuration" "appconf" {
   name                = var.acs_admin_app_config_name
   resource_group_name = data.azurerm_resource_group.acs_resource_group.name

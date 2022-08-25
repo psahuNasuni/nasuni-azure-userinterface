@@ -100,7 +100,7 @@ resource "null_resource" "function_app_publish" {
 
 resource "null_resource" "set_app_config_env_var" {
   provisioner "local-exec" {
-    command = "az functionapp config appsettings set --name ${azurerm_function_app.function_app.name} --resource-group ${data.azurerm_resource_group.acs_resource_group.name} --settings AZURE_KEY_VAULT=${data.azurerm_app_configuration.appconf.primary_write_key[0].connection_string}"
+    command = "az functionapp config appsettings set --name ${azurerm_function_app.function_app.name} --resource-group ${data.azurerm_resource_group.acs_resource_group.name} --settings ACS_ADMIN_APP_CONFIG_CONNECTION_STRING=${data.azurerm_app_configuration.appconf.primary_write_key[0].connection_string}"
   }
 }
 

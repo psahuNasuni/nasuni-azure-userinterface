@@ -34,8 +34,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     # Set the Azure Cognitive Search Variables
     retrieved_config_acs_api_key = app_config_client.get_configuration_setting(key='acs-api-key', label='acs-api-key')
     retrieved_config_nmc_api_acs_url = app_config_client.get_configuration_setting(key='nmc-api-acs-url', label='nmc-api-acs-url')
-    # retrieved_config_datasource_connection_string = app_config_client.get_configuration_setting(key='datasource-connection-string', label='datasource-connection-string')
-    # retrieved_config_destination_container_name = app_config_client.get_configuration_setting(key='destination-container-name', label='destination-container-name')
     retrieved_config_nmc_volume_name = app_config_client.get_configuration_setting(key='nmc-volume-name', label='nmc-volume-name')
     retrieved_config_unifs_toc_handle = app_config_client.get_configuration_setting(key='unifs-toc-handle', label='unifs-toc-handle')
     retrieved_config_web_access_appliance_address = app_config_client.get_configuration_setting(key='web-access-appliance-address', label='web-access-appliance-address')
@@ -57,8 +55,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.info('Fetching Secretes from Azure App Configuration')
         acs_api_key = retrieved_config_acs_api_key.value
         nmc_api_acs_url = retrieved_config_nmc_api_acs_url.value
-        # datasource_connection_string = retrieved_config_datasource_connection_string.value
-        # destination_container_name = retrieved_config_destination_container_name.value
         nmc_volume_name = retrieved_config_nmc_volume_name.value
         unifs_toc_handle = retrieved_config_unifs_toc_handle.value
         web_access_appliance_address = retrieved_config_web_access_appliance_address.value
@@ -66,11 +62,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         access_url = "https://" + web_access_appliance_address + "/fs/view/" + nmc_volume_name + "/" 
 
         # Define the names for the data source, skillset, index and indexer
-        # datasource_name = "datasource"
-        # skillset_name = "skillset"
         index_name = "index"
-        # indexer_name = "indexer"
-
         logging.info('Setting the endpoint')
         # Setup the endpoint
         endpoint = nmc_api_acs_url

@@ -27,7 +27,7 @@ def generateResponse(response, access_url, unifs_toc_handle, nmc_volume_name):
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     ### Connect to an App Configuration store
-    connection_string = os.environ["ACS_ADMIN_APP_CONFIG_CONNECTION_STRING"]
+    connection_string = os.environ["AZURE_APP_CONFIG"]
     # connection_string = "Endpoint=https://nasuni-labs-acs-admin.azconfig.io;Id=l3/w-l0-s0:CCUv6UV80DrW8pZ8A7zt;Secret=3kQ0GVNf7nJ2CUb4Id5FtBeFcWbrrJOCu/tuVdUlHqU="
     app_config_client = AzureAppConfigurationClient.from_connection_string(connection_string)
 

@@ -166,7 +166,7 @@ function appendData(resultdiv, data) {
 
         if (Object.keys(data.value[0]).length >= 0) {
             console.log(data.value.length)
-            link.innerHTML = "<a class='elasti_link result-title' href=" + data.value[i].File_Location + ">" + data.value[i].File_Location + "</a><br>";
+            link.innerHTML = "<a class='elasti_link result-title' href=" + data.value[i].file_location + ">" + data.value[i].file_location + "</a><br>";
             resultBox.append(link);
 
 

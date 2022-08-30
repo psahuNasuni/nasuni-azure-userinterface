@@ -3,21 +3,17 @@ import logging
 import json
 import requests
 import azure.functions as func
-from azure.identity import DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
-from azure.appconfiguration import AzureAppConfigurationClient, ConfigurationSetting
+from azure.appconfiguration import AzureAppConfigurationClient
 
-def generateResponse(response, access_url, unifs_toc_handle, nmc_volume_name):
+def generateResponse(response, access_url):
     """
     Update the File URL in Response
     """
     updated_values = []
     response = json.loads(response.text)
-    extract = lambda x: access_url + x["File_Location"].split("\\")[-1]
+    extract = lambda x: access_url + x["file_location"].split("\\")[-1]
     for recordes in response['value']:
-        recordes["File_Location"] = extract(recordes)
-        recordes["TOC_Handle"] = unifs_toc_handle
-        recordes["Volume_Name"] = nmc_volume_name
+        recordes["file_location"] = extract(recordes)
         updated_values.append(recordes)
     updated_values = {"value": updated_values}
     response.update(updated_values)
@@ -35,7 +31,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     retrieved_config_acs_api_key = app_config_client.get_configuration_setting(key='acs-api-key', label='acs-api-key')
     retrieved_config_nmc_api_acs_url = app_config_client.get_configuration_setting(key='nmc-api-acs-url', label='nmc-api-acs-url')
     retrieved_config_nmc_volume_name = app_config_client.get_configuration_setting(key='nmc-volume-name', label='nmc-volume-name')
-    retrieved_config_unifs_toc_handle = app_config_client.get_configuration_setting(key='unifs-toc-handle', label='unifs-toc-handle')
     retrieved_config_web_access_appliance_address = app_config_client.get_configuration_setting(key='web-access-appliance-address', label='web-access-appliance-address')
     
     name = req.params.get("name")
@@ -56,7 +51,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         acs_api_key = retrieved_config_acs_api_key.value
         nmc_api_acs_url = retrieved_config_nmc_api_acs_url.value
         nmc_volume_name = retrieved_config_nmc_volume_name.value
-        unifs_toc_handle = retrieved_config_unifs_toc_handle.value
         web_access_appliance_address = retrieved_config_web_access_appliance_address.value
 
         access_url = "https://" + web_access_appliance_address + "/fs/view/" + nmc_volume_name + "/" 
@@ -81,7 +75,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             r = requests.get(endpoint + "/indexes/" + index_name +
                             "/docs?&search="+ name + '"', headers=headers, params=params)
 
-        r = generateResponse(r, access_url, unifs_toc_handle, nmc_volume_name)
+        r = generateResponse(r, access_url)
         return func.HttpResponse(
              json.dumps(r, indent=1),
              status_code=200

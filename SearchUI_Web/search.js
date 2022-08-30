@@ -1,6 +1,6 @@
 // Update this variable to point to your domain.
 var search_api = 'https://nasuni-function-app-799e1d00e9e6.azurewebsites.net/api/SearchFunction';
-// var volume_api = 'https://jrol9tzdwc.execute-api.us-east-2.amazonaws.com/dev/es-volume';
+var volume_api = 'https://nasuni-function-app-799e1d00e9e6.azurewebsites.net/api/get_volume';
 var loadingdiv = $('#loading');
 var noresults = $('#noresults');
 var resultdiv = $('#results');

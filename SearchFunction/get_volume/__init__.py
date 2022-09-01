@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import os
 import logging
 import json
@@ -56,8 +57,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 "Access-Control-Allow-Origin": '*'
             },
             "isBase64Encoded": False
-        }
-    response['volume'] = json.dumps(r)
+        } 
+    response['body'] = json.dumps(r)
+    logging.info('INFO ::: Response Json:{}'.format(response))
     return func.HttpResponse(
             json.dumps(response, indent=1),
             status_code=200

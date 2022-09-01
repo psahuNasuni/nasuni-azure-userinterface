@@ -42,21 +42,20 @@ async function search() {
     resultdiv.empty();
     loadingdiv.show();
     // Get the query from the user
-    // if (volume == undefined || volume == " ") {
-    //     console.log("no volume selected");
-    //     // throw new Error("Something went badly wrong!");
-    //     loadingdiv.hide();
-    //     noresults.hide();
-    //     var content = document.createElement("div");
-    //     content.innerHTML += "<p class='result-status'><b>No volume was selected</p>";
-    //     resultdiv.append(content);
-    //     return;
-    // } else if (volume == "all") {
-    //     volume = "";
-    // }
+    if (volume == undefined || volume == " ") {
+        console.log("no volume selected");
+        // throw new Error("Something went badly wrong!");
+        loadingdiv.hide();
+        noresults.hide();
+        var content = document.createElement("div");
+        content.innerHTML += "<p class='result-status'><b>No volume was selected</p>";
+        resultdiv.append(content);
+        return;
+    } else if (volume == "all") {
+        volume = "";
+    }
 
-    // let query = searchbox.val() + "~" + volume;
-    let query = searchbox.val()
+    let query = searchbox.val() + "~" + volume;
     console.log(query);
     // Only run a query if the string contains at least three characters
     if (query.length > 0) {
@@ -94,10 +93,10 @@ async function start() {
         document.getElementById("defVal").innerText = "Select Volume"
     }
     console.log(volSelect)
-    // response = await $.get(volume_api, 'json');
-    // arr = response.split(",");
-    // var chars = ['[', ']', '\\', '"'];
-    // replaceAll(chars);
+    response = await $.get(volume_api, 'json');
+    arr = response.split(",");
+    var chars = ['[', ']', '\\', '"'];
+    replaceAll(chars);
 }
 
 //Filtering and removing extra characters

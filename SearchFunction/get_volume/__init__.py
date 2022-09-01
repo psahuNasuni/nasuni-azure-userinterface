@@ -14,7 +14,7 @@ def get_volumes(response):
     response = json.loads(response.text)
     logging.info('INFO ::: Insite get_volume Response: {}'.format(response))
     for recordes in response['value']:
-        if recordes['volume_name'] not in volume_list:
+        if recordes['volume_name'] != None and  recordes['volume_name'] not in volume_list:
             volume_list.append(recordes['volume_name'])
     return volume_list
 

@@ -94,7 +94,8 @@ async function start() {
     }
     console.log(volSelect)
     response = await $.get(volume_api, 'json');
-    arr = response.split(",");
+    response = JSON.parse(response);
+    arr = response.body.split(",");   
     var chars = ['[', ']', '\\', '"'];
     replaceAll(chars);
 }

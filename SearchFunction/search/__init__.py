@@ -22,9 +22,8 @@ def generateResponse(response, access_url):
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
-    ### Connect to an App Configuration store
+    # Connect to an App Configuration store
     connection_string = os.environ["AZURE_APP_CONFIG"]
-    # connection_string = "Endpoint=https://nasuni-labs-acs-admin.azconfig.io;Id=l3/w-l0-s0:CCUv6UV80DrW8pZ8A7zt;Secret=3kQ0GVNf7nJ2CUb4Id5FtBeFcWbrrJOCu/tuVdUlHqU="
     app_config_client = AzureAppConfigurationClient.from_connection_string(connection_string)
 
     # Set the Azure Cognitive Search Variables
@@ -32,8 +31,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     retrieved_config_nmc_api_acs_url = app_config_client.get_configuration_setting(key='nmc-api-acs-url', label='nmc-api-acs-url')
     retrieved_config_nmc_volume_name = app_config_client.get_configuration_setting(key='nmc-volume-name', label='nmc-volume-name')
     retrieved_config_web_access_appliance_address = app_config_client.get_configuration_setting(key='web-access-appliance-address', label='web-access-appliance-address')
-    
+    search_query=''
+    volume_name=''
     name = req.params.get("name")
+    
     if not name:
         try:
             req_body = req.get_json()
@@ -45,8 +46,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     if not name:
         return func.HttpResponse(f"Search Query is empty, {name}")
     else:
-        logging.info('Fetching Values Azure App Configuration')
- 
+        char = '~'
+        if char in name:
+            l_search_term=name.split('~')
+            search_query=l_search_term[0]
+            volume_name=l_search_term[1]
+        else:
+            search_query=name
+            volume_name=''
+
         logging.info('Fetching Secretes from Azure App Configuration')
         acs_api_key = retrieved_config_acs_api_key.value
         nmc_api_acs_url = retrieved_config_nmc_api_acs_url.value
@@ -65,17 +73,27 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         params = {
             'api-version': '2020-06-30'
         }
-                
+
         logging.info("Searching URl")
-        if name == '*':
-            r = requests.get(endpoint + "/indexes/" + index_name +
-                 "/docs?&search=*", headers=headers, params=params)
-        else:
-            # Query the index to return the contents
-            r = requests.get(endpoint + "/indexes/" + index_name +
-                            "/docs?&search="+ name + '"', headers=headers, params=params)
+
+        # Check from specific volumes
+        if volume_name != '':
+            logging.info('INFO ::: Selected Volume {}'.format(volume_name))
+            if search_query == '*':
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=*&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
+            else:
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=" + search_query + '"' + "&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
+        else: # Check from all volumes
+            logging.info('INFO ::: Selected all Volume')
+            if search_query == '*':
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=*", headers=headers, params=params)
+            else:
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=" + search_query + '"', headers=headers, params=params)
+
+        logging.info('INFO ::: Response URL:{}'.format(r))
 
         r = generateResponse(r, access_url)
+        logging.info('INFO ::: Response URL After generating Response:{}'.format(r))
         return func.HttpResponse(
              json.dumps(r, indent=1),
              status_code=200

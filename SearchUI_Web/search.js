@@ -55,7 +55,8 @@ async function search() {
         volume = "";
     }
 
-    let query = searchbox.val() + "&volume_name=" + volume;
+    let query = searchbox.val() + "~" + volume;
+
     console.log(query);
     // Only run a query if the string contains at least three characters
     if (query.length > 0) {
@@ -117,10 +118,7 @@ function replaceAll(chars) {
 
 //Appending from volume name array to drop down
 function appendDropDown(arr) {
-
-
     var selectOpt = document.getElementById("selectVolume");
-
     console.log(volSelect)
 
     for (var i = 0; i < arr.length; i++) {
@@ -154,6 +152,7 @@ function indexChange() {
 //Appending all the results to the main resultdiv 
 function appendData(resultdiv, data) {
     // console.log(data.value[0].length)
+    console.log(data)
     console.log(Object.keys(data.value[0]).length)
     console.log(typeof(data.value))
     for (var i = index; i < data.value.length; i++) {
@@ -183,8 +182,6 @@ function appendData(resultdiv, data) {
         }
         paginationTrigger(data)
     }
-
-
 }
 
 function paginationTrigger(data) {

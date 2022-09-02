@@ -1,6 +1,6 @@
 // Update this variable to point to your domain.
 var search_api = 'https://nasuni-function-app-799e1d00e9e6.azurewebsites.net/api/SearchFunction';
-// var volume_api = 'https://jrol9tzdwc.execute-api.us-east-2.amazonaws.com/dev/es-volume';
+var volume_api = 'https://nasuni-function-app-799e1d00e9e6.azurewebsites.net/api/get_volume';
 var loadingdiv = $('#loading');
 var noresults = $('#noresults');
 var resultdiv = $('#results');
@@ -42,21 +42,21 @@ async function search() {
     resultdiv.empty();
     loadingdiv.show();
     // Get the query from the user
-    // if (volume == undefined || volume == " ") {
-    //     console.log("no volume selected");
-    //     // throw new Error("Something went badly wrong!");
-    //     loadingdiv.hide();
-    //     noresults.hide();
-    //     var content = document.createElement("div");
-    //     content.innerHTML += "<p class='result-status'><b>No volume was selected</p>";
-    //     resultdiv.append(content);
-    //     return;
-    // } else if (volume == "all") {
-    //     volume = "";
-    // }
+    if (volume == undefined || volume == " ") {
+        console.log("no volume selected");
+        // throw new Error("Something went badly wrong!");
+        loadingdiv.hide();
+        noresults.hide();
+        var content = document.createElement("div");
+        content.innerHTML += "<p class='result-status'><b>No volume was selected</p>";
+        resultdiv.append(content);
+        return;
+    } else if (volume == "all") {
+        volume = "";
+    }
 
-    // let query = searchbox.val() + "~" + volume;
-    let query = searchbox.val()
+    let query = searchbox.val() + "~" + volume;
+
     console.log(query);
     // Only run a query if the string contains at least three characters
     if (query.length > 0) {
@@ -94,10 +94,11 @@ async function start() {
         document.getElementById("defVal").innerText = "Select Volume"
     }
     console.log(volSelect)
-    // response = await $.get(volume_api, 'json');
-    // arr = response.split(",");
-    // var chars = ['[', ']', '\\', '"'];
-    // replaceAll(chars);
+    response = await $.get(volume_api, 'json');
+    response = JSON.parse(response);
+    arr = response.body.split(",");   
+    var chars = ['[', ']', '\\', '"'];
+    replaceAll(chars);
 }
 
 //Filtering and removing extra characters
@@ -117,10 +118,7 @@ function replaceAll(chars) {
 
 //Appending from volume name array to drop down
 function appendDropDown(arr) {
-
-
     var selectOpt = document.getElementById("selectVolume");
-
     console.log(volSelect)
 
     for (var i = 0; i < arr.length; i++) {
@@ -154,6 +152,7 @@ function indexChange() {
 //Appending all the results to the main resultdiv 
 function appendData(resultdiv, data) {
     // console.log(data.value[0].length)
+    console.log(data)
     console.log(Object.keys(data.value[0]).length)
     console.log(typeof(data.value))
     for (var i = index; i < data.value.length; i++) {
@@ -166,7 +165,7 @@ function appendData(resultdiv, data) {
 
         if (Object.keys(data.value[0]).length >= 0) {
             console.log(data.value.length)
-            link.innerHTML = "<a class='elasti_link result-title' href=" + data.value[i].File_Location + ">" + data.value[i].File_Location + "</a><br>";
+            link.innerHTML = "<a class='elasti_link result-title' href=" + data.value[i].file_location + ">" + data.value[i].file_location + "</a><br>";
             resultBox.append(link);
 
 
@@ -183,8 +182,6 @@ function appendData(resultdiv, data) {
         }
         paginationTrigger(data)
     }
-
-
 }
 
 function paginationTrigger(data) {

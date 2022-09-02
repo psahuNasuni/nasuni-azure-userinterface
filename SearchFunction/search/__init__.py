@@ -3,21 +3,17 @@ import logging
 import json
 import requests
 import azure.functions as func
-from azure.identity import DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
-from azure.appconfiguration import AzureAppConfigurationClient, ConfigurationSetting
+from azure.appconfiguration import AzureAppConfigurationClient
 
-def generateResponse(response, access_url, unifs_toc_handle, nmc_volume_name):
+def generateResponse(response, access_url):
     """
     Update the File URL in Response
     """
     updated_values = []
     response = json.loads(response.text)
-    extract = lambda x: access_url + x["File_Location"].split("\\")[-1]
+    extract = lambda x: access_url + x["file_location"].split("\\")[-1]
     for recordes in response['value']:
-        recordes["File_Location"] = extract(recordes)
-        recordes["TOC_Handle"] = unifs_toc_handle
-        recordes["Volume_Name"] = nmc_volume_name
+        recordes["file_location"] = extract(recordes)
         updated_values.append(recordes)
     updated_values = {"value": updated_values}
     response.update(updated_values)
@@ -26,19 +22,19 @@ def generateResponse(response, access_url, unifs_toc_handle, nmc_volume_name):
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
-    ### Connect to an App Configuration store
+    # Connect to an App Configuration store
     connection_string = os.environ["AZURE_APP_CONFIG"]
-    # connection_string = "Endpoint=https://nasuni-labs-acs-admin.azconfig.io;Id=l3/w-l0-s0:CCUv6UV80DrW8pZ8A7zt;Secret=3kQ0GVNf7nJ2CUb4Id5FtBeFcWbrrJOCu/tuVdUlHqU="
     app_config_client = AzureAppConfigurationClient.from_connection_string(connection_string)
 
     # Set the Azure Cognitive Search Variables
     retrieved_config_acs_api_key = app_config_client.get_configuration_setting(key='acs-api-key', label='acs-api-key')
     retrieved_config_nmc_api_acs_url = app_config_client.get_configuration_setting(key='nmc-api-acs-url', label='nmc-api-acs-url')
     retrieved_config_nmc_volume_name = app_config_client.get_configuration_setting(key='nmc-volume-name', label='nmc-volume-name')
-    retrieved_config_unifs_toc_handle = app_config_client.get_configuration_setting(key='unifs-toc-handle', label='unifs-toc-handle')
     retrieved_config_web_access_appliance_address = app_config_client.get_configuration_setting(key='web-access-appliance-address', label='web-access-appliance-address')
-    
+    search_query=''
+    volume_name=''
     name = req.params.get("name")
+    
     if not name:
         try:
             req_body = req.get_json()
@@ -50,13 +46,19 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     if not name:
         return func.HttpResponse(f"Search Query is empty, {name}")
     else:
-        logging.info('Fetching Values Azure App Configuration')
- 
+        char = '~'
+        if char in name:
+            l_search_term=name.split('~')
+            search_query=l_search_term[0]
+            volume_name=l_search_term[1]
+        else:
+            search_query=name
+            volume_name=''
+
         logging.info('Fetching Secretes from Azure App Configuration')
         acs_api_key = retrieved_config_acs_api_key.value
         nmc_api_acs_url = retrieved_config_nmc_api_acs_url.value
         nmc_volume_name = retrieved_config_nmc_volume_name.value
-        unifs_toc_handle = retrieved_config_unifs_toc_handle.value
         web_access_appliance_address = retrieved_config_web_access_appliance_address.value
 
         access_url = "https://" + web_access_appliance_address + "/fs/view/" + nmc_volume_name + "/" 
@@ -71,17 +73,27 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         params = {
             'api-version': '2020-06-30'
         }
-                
-        logging.info("Searching URl")
-        if name == '*':
-            r = requests.get(endpoint + "/indexes/" + index_name +
-                 "/docs?&search=*", headers=headers, params=params)
-        else:
-            # Query the index to return the contents
-            r = requests.get(endpoint + "/indexes/" + index_name +
-                            "/docs?&search="+ name + '"', headers=headers, params=params)
 
-        r = generateResponse(r, access_url, unifs_toc_handle, nmc_volume_name)
+        logging.info("Searching URl")
+
+        # Check from specific volumes
+        if volume_name != '':
+            logging.info('INFO ::: Selected Volume {}'.format(volume_name))
+            if search_query == '*':
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=*&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
+            else:
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=" + search_query + '"' + "&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
+        else: # Check from all volumes
+            logging.info('INFO ::: Selected all Volume')
+            if search_query == '*':
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=*", headers=headers, params=params)
+            else:
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=" + search_query + '"', headers=headers, params=params)
+
+        logging.info('INFO ::: Response URL:{}'.format(r))
+
+        r = generateResponse(r, access_url)
+        logging.info('INFO ::: Response URL After generating Response:{}'.format(r))
         return func.HttpResponse(
              json.dumps(r, indent=1),
              status_code=200

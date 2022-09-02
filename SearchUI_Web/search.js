@@ -55,7 +55,7 @@ async function search() {
         volume = "";
     }
 
-    let query = searchbox.val() + "~" + volume;
+    let query = searchbox.val() + "&volume_name=" + volume;
     console.log(query);
     // Only run a query if the string contains at least three characters
     if (query.length > 0) {

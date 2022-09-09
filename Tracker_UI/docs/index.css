@@ -1,0 +1,91 @@
+.body-bg {
+	opacity: 0.6;
+  position: fixed;
+  right: 0;
+  left: 0;
+  top: 5%;
+  width: 100%;
+  height: auto;
+}
+
+.logo {
+	position:fixed;
+	padding: 5px;
+	margin: auto;
+	top:0;
+	left:0;
+	font-size: 1.25rem;
+    line-height: inherit;
+    white-space: nowrap;
+	border-style: none;
+}
+
+header {
+	position: fixed;
+	top:0;
+	width: 100%;
+	height: 7%;
+	background-color:rgba(255, 255, 255, 1) ;
+	clear: both;
+	margin: auto;
+}
+
+.bodyContainer {
+	height: 95vh;
+	width: 100%	;
+	overflow:auto;
+	position: absolute;
+	left: 0%;
+	top:5%;
+}
+
+table {
+  /* border: solid 1px black;
+  border-collapse:inherit; */
+  border-radius: 20px;
+  border-bottom:  none;
+  width: 100%;
+  table-layout: fixed ;
+  
+}
+
+
+
+th {
+  /* border:solid 1px black; */
+  text-align: left;
+  padding: 8px;
+  background-color: #49ac50;
+  color:white;
+  font-size: 18px;
+  text-align: center;
+  position: relative;
+}
+td {
+  text-align: center;
+  padding: 8px;
+  width: 25% ;
+}
+
+tr:nth-child(even) {
+  background-color: whitesmoke;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: rgb(159, 209, 159) ;
+}
+
+.pagination a {
+  color: black;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+  transition: background-color .3s;
+}
+
+.pagination a.active {
+  background-color: dodgerblue;
+  color: white;
+}
+
+.pagination a:hover:not(.active) {background-color: #ddd;}

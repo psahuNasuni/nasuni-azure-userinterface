@@ -116,7 +116,7 @@ resource "null_resource" "update_searchui_js" {
     command = "sed -i 's#var volume_api.*$#var volume_api = \"https://${azurerm_linux_function_app.search_function_app.default_hostname}/api/get_volume\"; #g' SearchUI_Web/search.js"
   }
   provisioner "local-exec" {
-    command = "sed -i 's#var schedulerName.*$#var schedulerName = \"https://${var.nac_scheduler_name}\"; #g' Tracker_UI/docs/fetch.js"
+    command = "sed -i 's#var schedulerName.*$#var schedulerName = \"${var.nac_scheduler_name}\"; #g' Tracker_UI/docs/fetch.js"
   }
 
   depends_on = [null_resource.function_app_publish]

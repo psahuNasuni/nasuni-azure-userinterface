@@ -11,9 +11,9 @@ def generateResponse(response, access_url):
     """
     updated_values = []
     response = json.loads(response.text)
-    extract = lambda x: access_url + x["file_location"].split("\\")[-1]
+    extract = lambda x, y: access_url + y + "/" + x["file_location"].split("\\")[-1]
     for recordes in response['value']:
-        recordes["file_location"] = extract(recordes)
+        recordes["file_location"] = extract(recordes, recordes["volume_name"])
         updated_values.append(recordes)
     updated_values = {"value": updated_values}
     response.update(updated_values)
@@ -29,7 +29,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     # Set the Azure Cognitive Search Variables
     retrieved_config_acs_api_key = app_config_client.get_configuration_setting(key='acs-api-key', label='acs-api-key')
     retrieved_config_nmc_api_acs_url = app_config_client.get_configuration_setting(key='nmc-api-acs-url', label='nmc-api-acs-url')
-    retrieved_config_nmc_volume_name = app_config_client.get_configuration_setting(key='nmc-volume-name', label='nmc-volume-name')
     retrieved_config_web_access_appliance_address = app_config_client.get_configuration_setting(key='web-access-appliance-address', label='web-access-appliance-address')
     search_query=''
     volume_name=''
@@ -58,10 +57,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.info('Fetching Secretes from Azure App Configuration')
         acs_api_key = retrieved_config_acs_api_key.value
         nmc_api_acs_url = retrieved_config_nmc_api_acs_url.value
-        nmc_volume_name = retrieved_config_nmc_volume_name.value
         web_access_appliance_address = retrieved_config_web_access_appliance_address.value
 
-        access_url = "https://" + web_access_appliance_address + "/fs/view/" + nmc_volume_name + "/" 
+        access_url = "https://" + web_access_appliance_address + "/fs/view/"
 
         # Define the names for the data source, skillset, index and indexer
         index_name = "index"

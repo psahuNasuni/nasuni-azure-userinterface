@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Scheduler Tracker</title>
+    <link rel="stylesheet" media="all" type="text/css" href="index.css" />
+    
+  </head>
+  <body onload="trackerStart()">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light header">
+      <a href="#" class="navbar-brand logo">
+        <img src="https://www.nasuni.com/wp-content/themes/nasuni/dist/img/logo-color.svg" alt="CoolBrand">
+      </a>
+    </nav>
+    <div class="background">
+      <img class="body-bg" src="paper.png" ondragstart="return false">
+    </div>
+    <div class="bodyContainer">
+    <section>
+      <table class="bordered table-sort" id="dataTable">
+        <thead>
+          <tr>
+            <th>Volume</th>
+            <th class="table-sort-default">Service</th>
+            <th>Status</th>
+            <th>Schedule</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr> </tr>
+          <!-- <tr> -->
+            
+        <!-- </tr> -->
+        </tbody>
+      </table>
+    </section>
+    <script type="text/javascript" src="table-sort-procedural.js"></script>
+    <script type="text/javascript" src="fetch.js"></script>
+    <script type="text/javascript" src="../../SearchUI_Web/search.js"></script>
+  </body>
+</html>

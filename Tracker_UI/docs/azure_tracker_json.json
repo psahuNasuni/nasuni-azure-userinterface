@@ -1,0 +1,32 @@
+{
+   "INTEGRATIONS":{
+      "es-vol-azure-01_acs":{
+         "_source":{
+            "acs_url":"https://nasuni-labs-acs-c49c15.search.windows.net",
+            "acs_request_url":"https://nasuni-labs-acs-c49c15.search.windows.net/indexes/index/docs?api-version=2021-04-30-Preview&search=*",
+            "default_url":"/search/index.html",
+            "frequency":"56",
+            "user_secret":"user-input-vault",
+            "created_by":"sgaikwad@nasuni.com",
+            "created_on":"20220905-114129",
+            "volume":"es-vol-azure-01",
+            "service":"acs"
+         },
+         "_NAC_activity":{
+            "most_recent_run":"2022:09:05-11:41:29",
+            "current_state":"Export-In-progress",
+            "latest_toc_handle_processed":"-"
+         }
+      }
+   },
+   "VOLUMES":{
+      "es-vol-azure-01":[
+         "acs"
+      ]
+   },
+   "SERVICES":{
+      "acs":[
+         "es-vol-azure-01"
+      ]
+   }
+}

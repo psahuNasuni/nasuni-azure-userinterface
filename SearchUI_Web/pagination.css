@@ -1,0 +1,85 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap'); */
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+.pagination ul{
+  width: 70%;
+  height: 7%;
+  display: flex;
+  flex-wrap: wrap;
+  background: #fff;
+  padding: 8px;
+  border-radius: 50px;
+  box-shadow: 0px 10px 15px rgba(0,0,0,0.1);
+  position: absolute;
+  left:10%;
+
+  background-color: red;
+  
+}
+.pagination ul li{
+    height:6%;
+  background-color: red;
+  list-style: none;
+  line-height: 45px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s ease;
+}
+.pagination ul li.numb{
+  list-style: none;
+  height: 45px;
+  width: 45px;
+  margin: 0 3px;
+  line-height: 45px;
+  border-radius: 50%;
+  background-color: red;
+}
+.pagination ul li.numb.first{
+  margin: 0px 3px 0 -5px;
+  background-color: green;
+}
+.pagination ul li.numb.last{
+  margin: 0px -5px 0 3px;
+  background-color: #337ab7;
+}
+.pagination ul li.dots{
+  font-size: 22px;
+  cursor: default;
+}
+.pagination ul li.btn{
+  padding: 0 20px;
+  border-radius: 50px;
+  background-color: red;
+}
+
+.pagination ul li.numb:hover{
+  background-color: grey;
+}
+.pagination ul li:active{
+  background-color: grey;
+}
+
+.pagination ul li:first-child:hover,
+.pagination ul li:last-child:after{
+  color: #fff;
+  background-color: red;
+}
+
+.pagination .firstSpan:active,
+.pagination .activeSpan:active,
+.pagination .activeSpan::after,
+  .pagination .lastSpan::after{
+    background-color: white;
+    }
+
+.activeSpan {
+  background-color: red;
+}

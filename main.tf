@@ -111,7 +111,7 @@ resource "azurerm_service_plan" "app_service_plan" {
   resource_group_name = data.azurerm_resource_group.acs_resource_group.name
   location            = data.azurerm_resource_group.acs_resource_group.location
   os_type             = "Linux"
-  sku_name            = "Y1"
+  sku_name            = "EP1"
 }
 
 data "azurerm_private_dns_zone" "search_function_app_dns_zone" {

@@ -44,7 +44,7 @@ resource "azurerm_subnet" "search_outbound_subnet_name" {
   name                 = "outbound-vnetSubnet-${random_id.unique_SearchUI_id.hex}"
   virtual_network_name = data.azurerm_virtual_network.VnetToBeUsed[0].name
   resource_group_name  = data.azurerm_virtual_network.VnetToBeUsed[0].resource_group_name
-  address_prefixes     = [var.search_outbound_subnet]
+  address_prefixes     = [var.search_outbound_subnet[0]]
   delegation {
     name = "serverFarms_delegation"
 

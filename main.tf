@@ -205,7 +205,7 @@ resource "azurerm_app_service_virtual_network_swift_connection" "outbound_vnet_i
 }
 
 locals {
-  publish_code_command = "az functionapp deployment source config-zip -g ${data.azurerm_resource_group.acs_resource_group.name} -n ${azurerm_linux_function_app.search_function_app.name} --src ${var.output_path}"
+  publish_code_command = "az functionapp deployment source config-zip -g ${data.azurerm_resource_group.acs_resource_group.name} -n ${azurerm_linux_function_app.search_function_app.name} --build-remote true --src ${var.output_path}"
 }
 
 resource "null_resource" "function_app_publish" {

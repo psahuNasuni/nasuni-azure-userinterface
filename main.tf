@@ -126,9 +126,9 @@ resource "azurerm_linux_function_app" "search_function_app" {
   location            = data.azurerm_resource_group.acs_resource_group.location
   service_plan_id     = azurerm_service_plan.app_service_plan.id
   app_settings = {
-    "WEBSITE_RUN_FROM_PACKAGE"    = "1",
-    "FUNCTIONS_WORKER_RUNTIME"    = "python",
-    "AzureWebJobsDisableHomepage" = "false",
+    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true",
+    "FUNCTIONS_WORKER_RUNTIME"       = "python",
+    "AzureWebJobsDisableHomepage"    = "false",
   }
   identity {
     type = "SystemAssigned"
@@ -210,9 +210,6 @@ locals {
 
 resource "null_resource" "function_app_publish" {
   provisioner "local-exec" {
-    command = var.use_private_ip == "Y" ? "sleep 15" : ""
-  }
-  provisioner "local-exec" {
     command = local.publish_code_command
   }
   depends_on = [
@@ -226,7 +223,6 @@ resource "null_resource" "function_app_publish" {
     publish_code_command = local.publish_code_command
   }
 }
-
 
 resource "null_resource" "set_app_config_env_var" {
   provisioner "local-exec" {

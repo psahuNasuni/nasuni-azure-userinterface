@@ -260,3 +260,8 @@ output "FunctionAppSearchURL" {
 output "FunctionAppVolumeURL" {
   value = "https://${azurerm_linux_function_app.search_function_app.default_hostname}/api/get_volume"
 }
+
+
+locals{
+aws_secret = "AHJUAXPZQIOPT536Q33X78"
+}

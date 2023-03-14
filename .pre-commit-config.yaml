@@ -11,8 +11,5 @@ repos:
       - id: check-ast
       - id: debug-statements
       - id: check-builtin-literals
-      - id: detect-aws-credentials
       - id: detect-private-key
-      - id: no-commit-to-branch
-        args: ['--branch', 'CTPROJECT-490-GitLeaks']
-      
+

@@ -4,9 +4,3 @@
   entry: gitleaks protect --verbose --redact --staged
   language: golang
   pass_filenames: false
-- id: gitleaks-docker
-  name: Detect hardcoded secrets
-  description: Detect hardcoded secrets using Gitleaks
-  entry: zricethezav/gitleaks protect --verbose --redact --staged
-  language: docker_image
-

@@ -1,0 +1,8 @@
+#!/bin/bash
+echo "failed"
+AWS_SECRET_ACCESS_KEY = "AHJUAXPZQIOPT536Q7PX78"
+AWS_SECRET_KEY_ID = "AHJUAXPZQIOPT536Q7PX780%467a88hTY"
+KEY = "SDHED33IJnsjnssn"
+password = "jejnsauhj79!2"
+echo "failed0"
+

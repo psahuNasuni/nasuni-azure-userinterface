@@ -262,5 +262,5 @@ output "FunctionAppVolumeURL" {
 }
 
 locals{
-aws_secret_key = "AHJy779asUU%PZQI536Q33X78"
+aws_secret_access_key = "AHJy779asUU%Piijee6Q33X78"
 }

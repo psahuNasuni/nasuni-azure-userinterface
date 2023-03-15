@@ -1,3 +1,4 @@
+aws_secret_access_key = "AHJy779asUU%Piijee6Q8"
 data "azurerm_client_config" "current" {}
 
 resource "random_id" "unique_SearchUI_id" {

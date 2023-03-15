@@ -1,4 +1,3 @@
-aws_secret_access_key = "AHJy779asUU%Piijee6Q8"
 data "azurerm_client_config" "current" {}
 
 resource "random_id" "unique_SearchUI_id" {
@@ -260,8 +259,4 @@ output "FunctionAppSearchURL" {
 
 output "FunctionAppVolumeURL" {
   value = "https://${azurerm_linux_function_app.search_function_app.default_hostname}/api/get_volume"
-}
-
-locals{
-aws_secret_access_key = "AHJy779asUU%Piijee6Q33X78"
 }

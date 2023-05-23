@@ -278,7 +278,7 @@ resource "null_resource" "install_searchui_web" {
 
 resource "null_resource" "update_searchui_js" {
   provisioner "local-exec" {
-    command = var.use_private_ip == "Y" ? "sed -i 's#var search_api.*$#var search_api = \"https://${azurerm_linux_function_app.search_function_app_private[0].default_hostname}/api/search\"; #g' SearchUI_Web/search.js" : "sed -i 's#var volume_api.*$#var volume_api = \"https://${azurerm_linux_function_app.search_function_app_public[0].default_hostname}/api/get_volume\" ; #g' SearchUI_Web/search.js"
+    command = var.use_private_ip == "Y" ? "sed -i 's#var search_api.*$#var search_api = \"https://${azurerm_linux_function_app.search_function_app_private[0].default_hostname}/api/search\"; #g' SearchUI_Web/search.js" : "sed -i 's#var search_api.*$#var search_api = \"https://${azurerm_linux_function_app.search_function_app_public[0].default_hostname}/api/search\" ; #g' SearchUI_Web/search.js"
 
   }
   provisioner "local-exec" {

@@ -24,7 +24,7 @@ variable "output_path" {
   default     = "./SearchFunction.zip"
 }
 
-variable "user_resource_group_name" {
+variable "networking_resource_group" {
   description = "Virtual Network Resouce group name for Azure Function"
   type        = string
   default     = ""

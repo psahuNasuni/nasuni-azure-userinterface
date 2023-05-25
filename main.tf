@@ -68,7 +68,7 @@ resource "azurerm_storage_account" "storage_account" {
 
 resource "null_resource" "disable_storage_public_access" {
   provisioner "local-exec" {
-    command = var.use_private_ip == "Y" ? "az storage account update --allow-blob-public-access false --name ${azurerm_storage_account.storage_account.name} --resource-group ${azurerm_storage_account.storage_account.resource_group_name}" : "echo 'INFO ::: NAC Discovery Storage Account is Public...'"
+    command = var.use_private_ip == "Y" ? "az storage account update --allow-blob-public-access false --name ${azurerm_storage_account.storage_account.name} --resource-group ${azurerm_storage_account.storage_account.resource_group_name}" : "echo 'INFO ::: Search Storage Account is Public...'"
   }
   depends_on = [azurerm_storage_account.storage_account]
 }

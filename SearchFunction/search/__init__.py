@@ -15,6 +15,7 @@ def generateResponse(response, access_url):
     extract = lambda x, y: access_url + y + "/" + x["file_location"].split("\\")[-1]
     for recordes in response['value']:
         recordes["file_location"] = extract(recordes, recordes["volume_name"])
+        recordes["file_location"] = recordes["file_location"].replace(" ","%20")
         updated_values.append(recordes)
     updated_values = {"value": updated_values}
     response.update(updated_values)
@@ -92,6 +93,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.info('INFO ::: Response URL:{}'.format(r))
 
         r = generateResponse(r, access_url)
+
         logging.info('INFO ::: Response URL After generating Response:{}'.format(r))
         return func.HttpResponse(
              json.dumps(r, indent=1),

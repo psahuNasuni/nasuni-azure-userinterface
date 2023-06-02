@@ -79,15 +79,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         if volume_name != '':
             logging.info('INFO ::: Selected Volume {}'.format(volume_name))
             if search_query == '*':
-                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=*&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=*&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
             else:
-                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=" + search_query + '"' + "&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=" + search_query + '"' + "&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
         else: # Check from all volumes
             logging.info('INFO ::: Selected all Volume')
             if search_query == '*':
-                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=*", headers=headers, params=params)
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=*", headers=headers, params=params)
             else:
-                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=" + search_query + '"', headers=headers, params=params)
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=" + search_query + '"', headers=headers, params=params)
 
         logging.info('INFO ::: Response URL:{}'.format(r))
 

@@ -15,7 +15,7 @@ def generateResponse(response, access_url):
     extract = lambda x, y: access_url + y + "/" + x["file_location"].split("\\")[-1]
     for recordes in response['value']:
         recordes["file_location"] = extract(recordes, recordes["volume_name"])
-        recordes["object_key"] = extract(recordes, recordes["volume_name"])
+        recordes["object_key"] = recordes["file_location"]
         recordes["file_location"] = recordes["file_location"].replace(" ","%20")
         updated_values.append(recordes)
     updated_values = {"value": updated_values}

@@ -1,6 +1,6 @@
 // Update this variable to point to your domain.
-var search_api = 'https://nasuni-function-app-799e1d00e9e6.azurewebsites.net/api/SearchFunction';
-var volume_api = 'https://nasuni-function-app-799e1d00e9e6.azurewebsites.net/api/get_volume';
+var search_api = "https://nasuni-searchfunction-app-c98f.azurewebsites.net/api/search" ; 
+var volume_api = "https://nasuni-searchfunction-app-c98f.azurewebsites.net/api/get_volume" ; 
 var loadingdiv = $('#loading');
 var noresults = $('#noresults');
 var resultdiv = $('#results');
@@ -11,7 +11,7 @@ var responseArr = [];
 var volume='all';
 var volSelect;
 let pagiResults = 1;
-var dataLen = 3;
+var dataLen = 6;
 var index = 0;
 var numArr = []
 
@@ -142,7 +142,7 @@ function indexChange() {
     index = numArr[pagiResults - 1]
 
     resultdiv.empty();
-    resultdiv.append('<p class="result-status">Found ' + responseArr.length + ' results.</p>');
+    resultdiv.append('<p class="result-status">Found ' + Object.keys(responseArr.value).length + ' results.</p>');
     noresults.hide();
     loadingdiv.hide();
 
@@ -155,7 +155,7 @@ function appendData(resultdiv, data) {
     console.log(data)
     console.log(Object.keys(data.value[0]).length)
     console.log(typeof(data.value))
-    for (var i = index; i < data.value.length; i++) {
+    for (var i = index; i < dataLen+index; i++) {
         var link = document.createElement("h5");
         var content = document.createElement("span");
         var resultBox = document.createElement("div");
@@ -164,8 +164,8 @@ function appendData(resultdiv, data) {
         spanDiv.classList.add("result-content");
 
         if (Object.keys(data.value[0]).length >= 0) {
-            console.log(data.value.length)
-            link.innerHTML = "<a class='elasti_link result-title' href=" + data.value[i].file_location + ">" + data.value[i].file_location + "</a><br>";
+            // console.log(data.value[i].file_location)
+            link.innerHTML = "<a class='elasti_link result-title' href=" + data.value[i].file_location + ">" + data.value[i].object_key + "</a><br>";
             resultBox.append(link);
 
 
@@ -180,17 +180,17 @@ function appendData(resultdiv, data) {
             stop();
 
         }
+        // console.log(data.length)
         paginationTrigger(data)
     }
 }
 
 function paginationTrigger(data) {
     if (pagiResults > 0) {
-        var totalPages = data.length / dataLen;
+        var totalPages = data.value.length/dataLen;
         if (totalPages % 1 != 0) {
             totalPages = Math.trunc(totalPages + 1)
         }
-
         page = Number(pagiResults);
         var paginationDiv = document.getElementById('pagination');
         var ul = document.createElement('ul')

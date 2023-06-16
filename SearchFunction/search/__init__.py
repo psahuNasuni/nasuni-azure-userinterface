@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import logging
 import json
@@ -14,6 +15,8 @@ def generateResponse(response, access_url):
     extract = lambda x, y: access_url + y + "/" + x["file_location"].split("\\")[-1]
     for recordes in response['value']:
         recordes["file_location"] = extract(recordes, recordes["volume_name"])
+        recordes["object_key"] = recordes["file_location"]
+        recordes["file_location"] = recordes["file_location"].replace(" ","%20")
         updated_values.append(recordes)
     updated_values = {"value": updated_values}
     response.update(updated_values)
@@ -78,19 +81,20 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         if volume_name != '':
             logging.info('INFO ::: Selected Volume {}'.format(volume_name))
             if search_query == '*':
-                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=*&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=*&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
             else:
-                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=" + search_query + '"' + "&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=" + search_query + '"' + "&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
         else: # Check from all volumes
             logging.info('INFO ::: Selected all Volume')
             if search_query == '*':
-                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=*", headers=headers, params=params)
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=*", headers=headers, params=params)
             else:
-                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&search=" + search_query + '"', headers=headers, params=params)
+                r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=" + search_query + '"', headers=headers, params=params)
 
         logging.info('INFO ::: Response URL:{}'.format(r))
 
         r = generateResponse(r, access_url)
+
         logging.info('INFO ::: Response URL After generating Response:{}'.format(r))
         return func.HttpResponse(
              json.dumps(r, indent=1),

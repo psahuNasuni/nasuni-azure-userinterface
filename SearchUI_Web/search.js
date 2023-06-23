@@ -1,6 +1,6 @@
 // Update this variable to point to your domain.
-var search_api = "https://nasuni-searchfunction-app-c98f.azurewebsites.net/api/search" ; 
-var volume_api = "https://nasuni-searchfunction-app-c98f.azurewebsites.net/api/get_volume" ; 
+var search_api = "https://nasuni-searchfunction-app-f490.azurewebsites.net/api/search" ; 
+var volume_api = "https://nasuni-searchfunction-app-f490.azurewebsites.net/api/get_volume" ; 
 var loadingdiv = $('#loading');
 var noresults = $('#noresults');
 var resultdiv = $('#results');
@@ -14,7 +14,11 @@ let pagiResults = 1;
 var dataLen = 6;
 var index = 0;
 var numArr = []
-
+var shareData={}
+var rightPart=""
+var edgeAppliance ="";
+var file_Share_url=""
+var shareName=""
 // Executes the search function 250 milliseconds after user stops typing
 searchbox.keyup(function() {
     clearTimeout(timer);
@@ -37,6 +41,7 @@ function paginationData(period) {
 }
 
 async function search() {
+    
     // Clear results before searching
     noresults.hide();
     resultdiv.empty();
@@ -83,6 +88,9 @@ async function search() {
 
 //Iterate volume names from API to drop down menu
 async function start() {
+    handleJsonFile()
+    // handleJsonFile()
+    // console.log(share)
     const urlParams = new URLSearchParams(location.search);
     volSelect = urlParams.get('q');
     if (volSelect != null) {
@@ -149,12 +157,17 @@ function indexChange() {
     appendData(resultdiv, responseArr);
 }
 
+function shareGet(res){
+    shareData=res
+}
+
+function applianceData(res){
+    edgeAppliance=res
+}
+
+
 //Appending all the results to the main resultdiv 
 function appendData(resultdiv, data) {
-    // console.log(data.value[0].length)
-    console.log(data)
-    console.log(Object.keys(data.value[0]).length)
-    console.log(typeof(data.value))
     for (var i = index; i < dataLen+index; i++) {
         var link = document.createElement("h5");
         var content = document.createElement("span");
@@ -162,10 +175,29 @@ function appendData(resultdiv, data) {
         var spanDiv = document.createElement('div');
         resultBox.classList.add("result-box");
         spanDiv.classList.add("result-content");
-
+        console.log(shareData)
+        
         if (Object.keys(data.value[0]).length >= 0) {
-            // console.log(data.value[i].file_location)
-            link.innerHTML = "<a class='elasti_link result-title' href=" + data.value[i].file_location + ">" + data.value[i].object_key + "</a><br>";
+            console.log(Object.keys(shareData.shares).length)
+            for(var j=0;j<Object.keys(shareData.shares).length;j++){
+                console.log(Object.values(shareData.shares[j])[0])
+                var sharePath=Object.values(shareData.shares[j])[0]
+                shareName=Object.keys(shareData.shares[j])[0]
+                // console.log(data.value[i].file_location)
+                var locationStr=data.value[i].file_path
+                
+                // console.log(rightPart)
+                // console.log(edgeAppliance)
+                extractRightPath(locationStr,sharePath)
+                if(file_Share_url==""){
+                    var file_url="data.value[i].file_location"
+                }else{
+                    var file_url=file_Share_url
+                }
+                // break
+            }
+        }
+            link.innerHTML = "<a class='elasti_link result-title' href=" + file_url + ">" + file_url + "</a><br>";
             resultBox.append(link);
 
 
@@ -182,7 +214,8 @@ function appendData(resultdiv, data) {
         }
         // console.log(data.length)
         paginationTrigger(data)
-    }
+    // }
+// }
 }
 
 function paginationTrigger(data) {
@@ -199,3 +232,21 @@ function paginationTrigger(data) {
         createPagination(totalPages, page);
     }
 }
+
+function extractRightPath(mainString, searchString) {
+    // console.log(shareData)
+        // for (var i = 0; i < Object.keys(shareData).length+1; i++){
+        //     searchString=data.value[i].file_location,Object.keys(shareData.shares[i])[0]
+        //   }
+    const regex = new RegExp(`(${searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(.*)`);
+    const match = regex.exec(mainString);
+  
+    if (match) {
+      rightPart = match[2].trim();
+      console.log(rightPart)
+      file_Share_url="https://"+edgeAppliance+"/fs/view/"+shareName+rightPart
+    //   return rightPart
+    }
+  
+    return null;
+  }

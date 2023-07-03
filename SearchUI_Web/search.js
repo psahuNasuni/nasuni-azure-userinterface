@@ -19,6 +19,7 @@ var rightPart=""
 var edgeAppliance ="";
 var file_Share_url=""
 var shareName=""
+var file_url
 // Executes the search function 250 milliseconds after user stops typing
 searchbox.keyup(function() {
     clearTimeout(timer);
@@ -179,25 +180,31 @@ function appendData(resultdiv, data) {
         
         if (Object.keys(data.value[0]).length >= 0) {
             console.log(Object.keys(shareData.shares).length)
-            for(var j=0;j<Object.keys(shareData.shares).length;j++){
-                console.log(Object.values(shareData.shares[j])[0])
-                var sharePath=Object.values(shareData.shares[j])[0]
-                shareName=Object.keys(shareData.shares[j])[0]
-                // console.log(data.value[i].file_location)
-                var locationStr=data.value[i].file_path
-                
-                // console.log(rightPart)
-                // console.log(edgeAppliance)
-                extractRightPath(locationStr,sharePath)
-                if(file_Share_url==""){
-                    var file_url="data.value[i].file_location"
-                }else{
-                    var file_url=file_Share_url
+            if(Object.keys(shareData.shares).length!=0){
+                for(var j=0;j<Object.keys(shareData.shares).length;j++){
+                    console.log(Object.values(shareData.shares[j])[0])
+                    var sharePath=Object.values(shareData.shares[j])[0]
+                    shareName=Object.keys(shareData.shares[i])[0]
+                    console.log(shareName)
+                    // console.log(data.value[i].file_location)
+                    var locationStr=data.value[i].file_path
+                    console.log(locationStr)
+            
+                    extractRightPath(locationStr,sharePath)
+                  
+                        
+                    file_url=data.value[i].object_key
+                    var file_loc=data.value[i].file_location
+                    console.log(file_loc)
+                    // }
+                    
                 }
-                // break
+            }else{
+                file_url=file_Share_url
             }
+            
         }
-            link.innerHTML = "<a class='elasti_link result-title' href=" + file_url + ">" + file_url + "</a><br>";
+            link.innerHTML = "<a class='elasti_link result-title' href=" + file_loc + ">" + file_url + "</a><br>";
             resultBox.append(link);
 
 
@@ -234,18 +241,16 @@ function paginationTrigger(data) {
 }
 
 function extractRightPath(mainString, searchString) {
-    // console.log(shareData)
-        // for (var i = 0; i < Object.keys(shareData).length+1; i++){
-        //     searchString=data.value[i].file_location,Object.keys(shareData.shares[i])[0]
-        //   }
     const regex = new RegExp(`(${searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(.*)`);
     const match = regex.exec(mainString);
   
     if (match) {
       rightPart = match[2].trim();
       console.log(rightPart)
-      file_Share_url="https://"+edgeAppliance+"/fs/view/"+shareName+rightPart
-    //   return rightPart
+      if(rightPart!=""){
+        file_Share_url="https://"+edgeAppliance+"/fs/view/"+shareName+rightPart
+      }
+   
     }
   
     return null;

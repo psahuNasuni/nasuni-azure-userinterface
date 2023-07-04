@@ -20,6 +20,8 @@ var edgeAppliance ="";
 var file_Share_url=""
 var shareName=""
 var file_url
+var file_loc
+
 // Executes the search function 250 milliseconds after user stops typing
 searchbox.keyup(function() {
     clearTimeout(timer);
@@ -193,14 +195,15 @@ function appendData(resultdiv, data) {
                     extractRightPath(locationStr,sharePath)
                   
                         
-                    file_url=data.value[i].object_key
-                    var file_loc=data.value[i].file_location
+                    file_url=file_Share_url
+                    file_loc=file_Share_url
                     console.log(file_loc)
                     // }
                     
                 }
             }else{
-                file_url=file_Share_url
+                file_url=data.value[i].object_key
+                file_loc=data.value[i].file_location
             }
             
         }

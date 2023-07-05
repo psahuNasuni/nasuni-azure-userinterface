@@ -1,6 +1,6 @@
 // Update this variable to point to your domain.
-var search_api = "https://nasuni-searchfunction-app-f490.azurewebsites.net/api/search" ; 
-var volume_api = "https://nasuni-searchfunction-app-f490.azurewebsites.net/api/get_volume" ; 
+var search_api = "https://nasuni-searchfunction-app-3bd3.azurewebsites.net/api/search" ; 
+var volume_api = "https://nasuni-searchfunction-app-3bd3.azurewebsites.net/api/get_volume" ; 
 var loadingdiv = $('#loading');
 var noresults = $('#noresults');
 var resultdiv = $('#results');
@@ -179,34 +179,31 @@ function appendData(resultdiv, data) {
         resultBox.classList.add("result-box");
         spanDiv.classList.add("result-content");
         console.log(shareData)
-        
+    
         if (Object.keys(data.value[0]).length >= 0) {
             console.log(Object.keys(shareData.shares).length)
-            if(Object.keys(shareData.shares).length!=0){
-                for(var j=0;j<Object.keys(shareData.shares).length;j++){
-                    console.log(Object.values(shareData.shares[j])[0])
-                    var sharePath=Object.values(shareData.shares[j])[0]
-                    shareName=Object.keys(shareData.shares[i])[0]
-                    console.log(shareName)
+            file_Share_url=""
+            for(var j=0;j<shareData.shares.length+1;j++){
+                var sharePath=Object.values(shareData.shares[j])[0]
+                    shareName=Object.keys(shareData.shares[j])[0]
+                    console.log(shareName)  
                     // console.log(data.value[i].file_location)
                     var locationStr=data.value[i].file_path
+                    var file_location=data.value[i].file_location
+                    var obj_key=data.value[i].object_key
                     console.log(locationStr)
             
-                    extractRightPath(locationStr,sharePath)
-                  
-                        
-                    file_url=file_Share_url
-                    file_loc=file_Share_url
-                    console.log(file_loc)
-                    // }
-                    
-                }
+                    extractRightPath(locationStr,sharePath,file_location,obj_key)
+                    break
+            }
+            console.log(file_Share_url)
+            if(file_Share_url!=""){
+                file_url=file_Share_url
+                file_loc=file_Share_url
             }else{
                 file_url=data.value[i].object_key
                 file_loc=data.value[i].file_location
             }
-            
-        }
             link.innerHTML = "<a class='elasti_link result-title' href=" + file_loc + ">" + file_url + "</a><br>";
             resultBox.append(link);
 
@@ -221,12 +218,12 @@ function appendData(resultdiv, data) {
 
             stop();
 
-        }
+        } //main if 
         // console.log(data.length)
         paginationTrigger(data)
-    // }
+    } //main for loop
 // }
-}
+} //main function
 
 function paginationTrigger(data) {
     if (pagiResults > 0) {
@@ -243,7 +240,7 @@ function paginationTrigger(data) {
     }
 }
 
-function extractRightPath(mainString, searchString) {
+function extractRightPath(mainString, searchString,file_location,obj_key) {
     const regex = new RegExp(`(${searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(.*)`);
     const match = regex.exec(mainString);
   
@@ -251,9 +248,11 @@ function extractRightPath(mainString, searchString) {
       rightPart = match[2].trim();
       console.log(rightPart)
       if(rightPart!=""){
+        
         file_Share_url="https://"+edgeAppliance+"/fs/view/"+shareName+rightPart
+        // file_url=file_Share_url
+        // file_loc=file_Share_url
       }
-   
     }
   
     return null;

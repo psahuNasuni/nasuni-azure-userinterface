@@ -1,6 +1,5 @@
-// Update this variable to point to your domain.
-var search_api = "https://nasuni-searchfunction-app-f490.azurewebsites.net/api/search" ; 
-var volume_api = "https://nasuni-searchfunction-app-f490.azurewebsites.net/api/get_volume" ; 
+var search_api = "https://nasuni-searchfunction-app-fe26.azurewebsites.net/api/search" ; 
+var volume_api = "https://nasuni-searchfunction-app-fe26.azurewebsites.net/api/get_volume" ; 
 var loadingdiv = $('#loading');
 var noresults = $('#noresults');
 var resultdiv = $('#results');
@@ -26,6 +25,7 @@ var file_loc
 searchbox.keyup(function() {
     clearTimeout(timer);
     timer = setTimeout(search, 500);
+    paginationData(1)
 });
 
 function dropDownData(period) {
@@ -92,8 +92,6 @@ async function search() {
 //Iterate volume names from API to drop down menu
 async function start() {
     handleJsonFile()
-    // handleJsonFile()
-    // console.log(share)
     const urlParams = new URLSearchParams(location.search);
     volSelect = urlParams.get('q');
     if (volSelect != null) {
@@ -170,8 +168,10 @@ function applianceData(res){
 
 
 //Appending all the results to the main resultdiv 
-function appendData(resultdiv, data) {
-    for (var i = index; i < dataLen+index; i++) {
+function appendData(resultdiv, data) 
+{
+    for (var i = index; i < dataLen+index; i++) 
+    {
         var link = document.createElement("h5");
         var content = document.createElement("span");
         var resultBox = document.createElement("div");
@@ -179,54 +179,62 @@ function appendData(resultdiv, data) {
         resultBox.classList.add("result-box");
         spanDiv.classList.add("result-content");
         console.log(shareData)
-        
-        if (Object.keys(data.value[0]).length >= 0) {
+    
+        if (Object.keys(data.value[0]).length >= 0) 
+        {
             console.log(Object.keys(shareData.shares).length)
-            if(Object.keys(shareData.shares).length!=0){
-                for(var j=0;j<Object.keys(shareData.shares).length;j++){
-                    console.log(Object.values(shareData.shares[j])[0])
-                    var sharePath=Object.values(shareData.shares[j])[0]
-                    shareName=Object.keys(shareData.shares[i])[0]
-                    console.log(shareName)
-                    // console.log(data.value[i].file_location)
-                    var locationStr=data.value[i].file_path
-                    console.log(locationStr)
-            
-                    extractRightPath(locationStr,sharePath)
-                  
-                        
+
+            file_Share_url=""
+            let sharePathExist = false
+
+            for(var j=0;j<shareData.shares.length;j++)
+            {
+                var locationStr=data.value[i].file_path
+
+                var sharePath=Object.values(shareData.shares[j])[0]
+
+                shareName=Object.keys(shareData.shares[j])[0]
+
+                erpFuncResponse=extractRightPath(locationStr,sharePath)  
+
+                if(erpFuncResponse!=null)
+                {
                     file_url=file_Share_url
-                    file_loc=file_Share_url
-                    console.log(file_loc)
-                    // }
-                    
+                    file_loc=file_Share_url.trim().replace(/ /g,'%20');
+                    sharePathExist=true
+                    break
                 }
-            }else{
-                file_url=data.value[i].object_key
-                file_loc=data.value[i].file_location
+                
             }
+
+            if(!sharePathExist)
+                {   
+                    let volume=data.value[i].volume_name
+                    let filePath=data.value[i].file_path.split('destbucket')[1]
+                    
+                    file_loc="https://"+edgeAppliance+"/fs/view/"+volume+filePath                 
+                    file_url=file_loc.trim().replace(/%20/g,' ');
+                }
             
-        }
             link.innerHTML = "<a class='elasti_link result-title' href=" + file_loc + ">" + file_url + "</a><br>";
             resultBox.append(link);
 
-
-                if (data.value[i].content.length > 0) {
-                        content.innerHTML += data.value[i].content;
-
-                    spanDiv.append(content);
-                    resultBox.append(spanDiv);
-                    resultdiv.append(resultBox);
+            if (data.value[i].content.length > 0) 
+            {
+                content.innerHTML += data.value[i].content;
+                spanDiv.append(content);
+                resultBox.append(spanDiv);
+                resultdiv.append(resultBox);
             }
 
             stop();
 
-        }
-        // console.log(data.length)
+        } 
+
         paginationTrigger(data)
-    // }
-// }
+    } 
 }
+
 
 function paginationTrigger(data) {
     if (pagiResults > 0) {
@@ -243,17 +251,18 @@ function paginationTrigger(data) {
     }
 }
 
-function extractRightPath(mainString, searchString) {
-    const regex = new RegExp(`(${searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(.*)`);
-    const match = regex.exec(mainString);
+// Matching share path with file path
+function extractRightPath(mainString, sharePath) {
+    const regex = new RegExp(`(${sharePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(.*)`);
+    let matchString=mainString.replace(/%20/g,' ');
+    const match = regex.exec(matchString);
   
     if (match) {
       rightPart = match[2].trim();
       console.log(rightPart)
-      if(rightPart!=""){
+        
         file_Share_url="https://"+edgeAppliance+"/fs/view/"+shareName+rightPart
-      }
-   
+        return true
     }
   
     return null;

@@ -264,8 +264,9 @@ resource "null_resource" "function_app_publish" {
 
 resource "null_resource" "set_app_config_env_var" {
   provisioner "local-exec" {
-    command = var.use_private_ip == "Y" ? "az functionapp config appsettings set --name ${azurerm_linux_function_app.search_function_app_private[0].name} --resource-group ${data.azurerm_resource_group.acs_resource_group.name} --settings AZURE_APP_CONFIG='${data.azurerm_app_configuration.appconf.primary_write_key[0].connection_string}'" : "az functionapp config appsettings set --name ${azurerm_linux_function_app.search_function_app_public[0].name} --resource-group ${data.azurerm_resource_group.acs_resource_group.name} --settings AZURE_APP_CONFIG='${data.azurerm_app_configuration.appconf.primary_write_key[0].connection_string}'"
+    command = var.use_private_ip == "Y" ? "az functionapp config appsettings set --name ${azurerm_linux_function_app.search_function_app_private[0].name} --resource-group ${data.azurerm_resource_group.acs_resource_group.name} --settings AZURE_APP_CONFIG=\"${data.azurerm_app_configuration.appconf.primary_write_key[0].connection_string}\"" : "az functionapp config appsettings set --name ${azurerm_linux_function_app.search_function_app_public[0].name} --resource-group ${data.azurerm_resource_group.acs_resource_group.name} --settings AZURE_APP_CONFIG=\"${data.azurerm_app_configuration.appconf.primary_write_key[0].connection_string}\""
   }
+  depends_on = [ null_resource.function_app_publish ]
 }
 
 ########### Deploy SEARCH UI Web Site ###########

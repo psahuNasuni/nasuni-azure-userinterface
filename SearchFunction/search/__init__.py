@@ -29,55 +29,58 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     connection_string = os.environ["AZURE_APP_CONFIG"]
     app_config_client = AzureAppConfigurationClient.from_connection_string(connection_string)
 
-    # Set the Azure Cognitive Search Variables
-    retrieved_config_acs_api_key = app_config_client.get_configuration_setting(key='acs-api-key', label='acs-api-key')
-    retrieved_config_nmc_api_acs_url = app_config_client.get_configuration_setting(key='nmc-api-acs-url', label='nmc-api-acs-url')
-    retrieved_config_web_access_appliance_address = app_config_client.get_configuration_setting(key='web-access-appliance-address', label='web-access-appliance-address')
-    
     logging.info('Fetching Secrets from Azure App Configuration')
-    acs_api_key = retrieved_config_acs_api_key.value
-    nmc_api_acs_url = retrieved_config_nmc_api_acs_url.value
-    web_access_appliance_address = retrieved_config_web_access_appliance_address.value
+    # Set the Azure Cognitive Search Variables
+    acs_api_key = app_config_client.get_configuration_setting(key='acs-api-key', label='acs-api-key').value
+    nmc_api_acs_url = app_config_client.get_configuration_setting(key='nmc-api-acs-url', label='nmc-api-acs-url').value
+    web_access_appliance_address = app_config_client.get_configuration_setting(key='web-access-appliance-address', label='web-access-appliance-address').value
 
     access_url = "https://" + web_access_appliance_address + "/fs/view/"
-    
-    search_query=''
-    volume_name=''
+    search_query = ''
+    volume_name = ''
 
-    next_url_endpoint = req.params.get("next_url_endpoint")
     top = req.params.get("top")
     skip = req.params.get("skip")
-
+    search = req.params.get("search")
+    filter = req.params.get("filter")
+    next_url_endpoint = req.params.get("next_url_endpoint")
     
-    if next_url_endpoint and (top or skip):
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            top = req_body.get("top")
-            skip = req_body.get("skip")
+    try:
+        req_body = req.get_json()
+    except ValueError:
+        pass
+    else:
+        top = req_body.get("top")
+        skip = req_body.get("skip")
+        search = req_body.get("search")
+        filter = req_body.get("filter")
+        next_url_endpoint = req_body.get("next_url_endpoint")
 
+    headers = {
+        'Content-Type': 'application/json',
+        'api-key': acs_api_key
+            }
 
-        payload ={}
-        if top:
-            payload["top"]=top
-        if skip:
-            payload["skip"]=skip
-
-        headers = {'Content-Type': 'application/json',
-            'api-key': acs_api_key}
-        
-        params = {
-        'api-version': '2020-06-30'
+    if next_url_endpoint:
+        data = {
+            "count": True,
         }
+        
+        if top:
+            data["top"] = top
+        if skip:
+            data["skip"] = skip
+        if search:
+            data["search"] = search
+        if filter:
+            data["filter"] = filter
 
         try:
-            r = requests.post(next_url_endpoint, json=payload, headers=headers, params=params)
-        
+            r = requests.post(next_url_endpoint, json=data, headers=headers)
             r = generateResponse(r, access_url)
 
-            logging.info('INFO ::: Response URL After generating Response:{}'.format(r))
+            logging.info(
+                'INFO ::: Response URL After generating Response:{}'.format(r))
             return func.HttpResponse(
                 json.dumps(r, indent=1),
                 status_code=200
@@ -87,68 +90,69 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 f"Error sending request: {str(e)}",
                 status_code=500
             )
-    
-    name = req.params.get("name")
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get("name")
-
-    if not name:
-        return func.HttpResponse(f"Search Query is empty, {name}")
     else:
-        char = '~'
-        if char in name:
-            l_search_term=name.split('~')
-            search_query=l_search_term[0]
-            volume_name=l_search_term[1]
+        name = req.params.get("name")
+        if not name:
+            try:
+                req_body = req.get_json()
+            except ValueError:
+                pass
+            else:
+                name = req_body.get("name")
+
+        if not name:
+            return func.HttpResponse(f"Search Query is empty, {name}")
         else:
-            search_query=name
-            volume_name=''
-                   
+            char = '~'
+            if char in name:
+                l_search_term = name.split('~')
+                search_query = l_search_term[0]
+                volume_name = l_search_term[1]
+            else:
+                search_query = name
+                volume_name = ''
 
-        # Define the names for the data source, skillset, index and indexer
-        index_name = "index"
-        logging.info('Setting the endpoint')
-        # Setup the endpoint
-        endpoint = nmc_api_acs_url
+            index_name = "index"
+            logging.info('Setting the endpoint')
+            # Setup the endpoint
+            api_endpoint = nmc_api_acs_url
+            params = {
+                'api-version': '2020-06-30'
+            }
 
-        headers = {'Content-Type': 'application/json',
-                'api-key': acs_api_key}
-        params = {
-            'api-version': '2020-06-30'
-        }
-        data={
-            "search":search_query
-        }
+            data = {
+                "count": True,
+                "search": search_query
+            }
 
-        logging.info("Searching URl")
+            if top:
+                data["top"] = top
+            if skip:
+                data["skip"] = skip
 
-        r=requests.post(endpoint + "/indexes/" + index_name +"/docs/search",params=params,headers=headers,json=data)
+            logging.info("Searching URl")
 
-        # # Check from specific volumes
-        # if volume_name != '':
-        #     logging.info('INFO ::: Selected Volume {}'.format(volume_name))
-        #     if search_query == '*':
-        #         r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=*&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
-        #     else:
-        #         r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=" + search_query + '"' + "&$filter=search.in(volume_name,'" + volume_name + "')", headers=headers, params=params)
-        # else: # Check from all volumes
-        #     logging.info('INFO ::: Selected all Volume')
-        #     if search_query == '*':
-        #         r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=*", headers=headers, params=params)
-        #     else:
-        #         r = requests.get(endpoint + "/indexes/" + index_name + "/docs?&$top=1000&search=" + search_query + '"', headers=headers, params=params)
+            # Check from specific volumes
+            if volume_name != '':
+                logging.info('INFO ::: Selected Volume {}'.format(volume_name))
 
-        logging.info('INFO ::: Response URL:{}'.format(r))
+                data["filter"] = "volume_name eq '{}'".format(volume_name)
+                r = requests.post(api_endpoint + "/indexes/" + index_name +
+                                  "/docs/search", params=params, headers=headers, json=data)
 
-        r = generateResponse(r, access_url)
+            else:  # Check from all volumes
+                logging.info('INFO ::: Selected all Volume')
 
-        logging.info('INFO ::: Response URL After generating Response:{}'.format(r))
-        return func.HttpResponse(
-             json.dumps(r, indent=1),
-             status_code=200
-        )
+                r = requests.post(api_endpoint + "/indexes/" + index_name +
+                                  "/docs/search", params=params, headers=headers, json=data)
+
+            logging.info('INFO ::: Response URL:{}'.format(r))
+
+            r = generateResponse(r, access_url)
+
+            logging.info(
+                'INFO ::: Response URL After generating Response:{}'.format(r))
+            return func.HttpResponse(
+                json.dumps(r, indent=1),
+                status_code=200
+            )

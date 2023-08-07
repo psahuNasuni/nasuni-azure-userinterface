@@ -6,12 +6,21 @@ import requests
 import azure.functions as func
 from azure.appconfiguration import AzureAppConfigurationClient
 
-def generateResponse(response, web_access_appliance_address):
+def generateResponse(response, web_access_appliance_address,search_query):
     """
     Update the File URL in Response
     """
     updated_values = []
     response = json.loads(response.text)
+
+    if "@search.nextPageParameters" not in response:
+        response["@search.nextPageParameters"]={
+            "count":True,
+            "search":search_query,
+            "skip":0
+        }
+
+
     extract = lambda x, y: access_url + y + "/" + x["file_location"].split("\\")[-1]
     for recordes in response['value']:
         access_url = "https://" + web_access_appliance_address[recordes["volume_name"]] + "/fs/view/"
@@ -90,7 +99,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         try:
             r = requests.post(next_url_endpoint, json=data, headers=headers)
-            r = generateResponse(r, web_access_appliance_address)
+            r = generateResponse(r, web_access_appliance_address,search)
 
             logging.info(
                 'INFO ::: Response URL After generating Response:{}'.format(r))
@@ -143,13 +152,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             params = {
                 'api-version': '2020-06-30'
             }
-            index_name = "index"
-            logging.info('Setting the endpoint')
-            # Setup the endpoint
-            api_endpoint = nmc_api_acs_url
-            params = {
-                'api-version': '2020-06-30'
-            }
 
             data = {
                 "count": True,
@@ -187,24 +189,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
                 r = requests.post(api_endpoint + "/indexes/" + index_name +
                                   "/docs/search", params=params, headers=headers, json=data)
-            # Check from specific volumes
-            if volume_name != '':
-                logging.info('INFO ::: Selected Volume {}'.format(volume_name))
-
-                data["filter"] = "volume_name eq '{}'".format(volume_name)
-                r = requests.post(api_endpoint + "/indexes/" + index_name +
-                                  "/docs/search", params=params, headers=headers, json=data)
-
-            else:  # Check from all volumes
-                logging.info('INFO ::: Selected all Volume')
-
-                r = requests.post(api_endpoint + "/indexes/" + index_name +
-                                  "/docs/search", params=params, headers=headers, json=data)
-
-            logging.info('INFO ::: Response URL:{}'.format(r))
+           
             logging.info('INFO ::: Response URL:{}'.format(r))
 
-            r = generateResponse(r, web_access_appliance_address)
+            r = generateResponse(r, web_access_appliance_address,search_query)
 
             logging.info(
                 'INFO ::: Response URL After generating Response:{}'.format(r))
@@ -212,9 +200,4 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 json.dumps(r, indent=1),
                 status_code=200
             )
-            logging.info(
-                'INFO ::: Response URL After generating Response:{}'.format(r))
-            return func.HttpResponse(
-                json.dumps(r, indent=1),
-                status_code=200
-            )
+            

@@ -36,7 +36,7 @@ header {
 }
 
 footer {
-	position: fixed;
+  position: fixed;
   left: 95vh;
   bottom: 0;
   width: auto;
@@ -147,6 +147,38 @@ option:hover {
 	font-family: sans-serif;
 }
 
+.data-range {
+	position: fixed;
+	/* position: relative; */
+	left: 180vh;
+    top: 92.1vh;
+	font-size: 12px;
+	padding-bottom: 5px;
+	height: 30px;
+}
 
+.range-bt-span {
+	display: inline;
+	/* line-height: 1.42857143 */
+}
 
+.data-range-text {
+	font-weight: bold;
+	border-radius: 1px;
+	background-color: white;
+	color:#337ab7;
+	font-size: 1rem;
+    font-weight: 400;
+	padding-top: 1vh;
+	padding-bottom: 15px;
+	padding-left: 15px;
+	padding-right: 15px;
+	height: 30px;
+	/* line-height: 1.42857143 */
+}
+
+.disabled{
+    pointer-events:none;
+    opacity:0.7;
+}
 

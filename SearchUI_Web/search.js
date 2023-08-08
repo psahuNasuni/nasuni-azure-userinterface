@@ -1,5 +1,5 @@
-var search_api = "";
-var volume_api = "";
+var search_api = "https://nasuni-searchfunction-app-02fc.azurewebsites.net/api/search" ; 
+var volume_api = "https://nasuni-searchfunction-app-02fc.azurewebsites.net/api/get_volume" ;
 var prevSearch=""
 var nextSearch=""
 var currentSearch=""
@@ -194,7 +194,7 @@ function dataRange(){
     if(skipVal==undefined ||skipVal==0){
         leftButtonLi.classList.add("disabled")
     }
-    if(!nextParamerters){
+    if(!responseArr["@odata.nextLink"]){
         lastRange=count
         rightButtonLi.classList.add("disabled")
     }else{

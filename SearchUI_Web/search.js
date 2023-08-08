@@ -2,7 +2,7 @@ var search_api = "https://nasuni-searchfunction-app-02fc.azurewebsites.net/api/s
 var volume_api = "https://nasuni-searchfunction-app-02fc.azurewebsites.net/api/get_volume" ;
 var prevSearch=""
 var nextSearch=""
-var currentSearch=""
+var currentSearch=search_api
 var loadingdiv = $('#loading');
 var noresults = $('#noresults');
 var resultdiv = $('#results');
@@ -32,6 +32,10 @@ var totalData=0
 var ifSkip=1
 // Executes the search function 250 milliseconds after user stops typing
 searchbox.keyup(function() {
+    if(firstRange!=0){
+        firstRange=0
+        skipVal=nextPara.skip
+    }
     clearTimeout(timer);
     timer = setTimeout(search, 500);
     paginationData(1)
@@ -122,7 +126,7 @@ async function search() {
 
 //Iterate volume names from API to drop down menu
 async function start() {
-    currentSearch=search_api
+    // currentSearch=search_api
     handleJsonFile()
     const urlParams = new URLSearchParams(location.search);
     volSelect = urlParams.get('q');

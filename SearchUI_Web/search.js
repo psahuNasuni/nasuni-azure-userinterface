@@ -317,8 +317,9 @@ function appendData(resultdiv, data)
                     let volume = data.value[i].volume_name
                     let filePathList = data.value[i].file_path.split('blob.core.windows.net')[1]
                     filePath=filePathList.split('/').slice(2).join('/')
+                    ipAddress=data.value[i].file_location.split('/')[2]
 
-                    file_loc = "https://" + edgeAppliance + "/fs/view/" + volume + "/" + filePath
+                    file_loc = "https://" + ipAddress + "/fs/view/" + volume + "/" + filePath
                     file_url=file_loc.trim().replace(/%20/g,' ');
                 }
             

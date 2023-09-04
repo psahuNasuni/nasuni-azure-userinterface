@@ -2,7 +2,7 @@ var search_api = "https://nasuni-searchfunction-app-02fc.azurewebsites.net/api/s
 var volume_api = "https://nasuni-searchfunction-app-02fc.azurewebsites.net/api/get_volume" ;
 var prevSearch=""
 var nextSearch=""
-var currentSearch=search_api
+var currentSearch=""
 var loadingdiv = $('#loading');
 var noresults = $('#noresults');
 var resultdiv = $('#results');
@@ -11,6 +11,7 @@ var rangeDiv = $('#dataRangeDiv');
 var timer = 0;
 var arr = [];
 var responseArr = [];
+var prevResponse =[]
 var volume='all';
 var volSelect;
 let pagiResults = 1;
@@ -32,10 +33,6 @@ var totalData=0
 var ifSkip=1
 // Executes the search function 250 milliseconds after user stops typing
 searchbox.keyup(function() {
-    if(firstRange!=0){
-        firstRange=0
-        skipVal=nextPara.skip
-    }
     clearTimeout(timer);
     timer = setTimeout(search, 500);
     paginationData(1)
@@ -76,24 +73,25 @@ async function search() {
         volume = "";
     }
 
-    let query = searchbox.val() + "~" + volume;
+    var query = searchbox.val() + "~" + volume;
 
     console.log(query);
     // Only run a query if the string contains at least three characters
     if (query.length > 0) {
         // Make the HTTP request with the query as a parameter and wait for the JSON results
-        if(nextSearch==""){
+        if(responseArr==""){
             currentSearch=search_api
-            var skipValue = 0
-            lastRange = 50
+            skipVal = 0
         }else{
-            var skipValue = 50
+            skipVal = nextPara.skip
         }
         prevSearch=currentSearch
+        
         prevSkip=skipVal
         console.log(skipVal)
-        let response_data = await $.get(currentSearch, { name: query, size: 25,count:'true',skip:skipVal}, 'json');
 
+        var response_data = await $.get(currentSearch, { name: query, size: 25,count:'true',skip:skipVal}, 'json');
+        
         console.log(typeof(response_data));
         // Get the part of the JSON response that we care about
         if (response_data.length > 0) {
@@ -101,8 +99,9 @@ async function search() {
             noresults.hide();
             // Iterate through the results and write them to HTML
             responseArr = JSON.parse(response_data);
+            nextPara=responseArr["@search.nextPageParameters"]
             if(skipVal==undefined){
-                nextPara=responseArr["@search.nextPageParameters"]
+                
                 skip=nextPara.skip
             }
 
@@ -114,7 +113,7 @@ async function search() {
             console.log(responseArr)
             console.log(responseArr["@odata.nextLink"])
             
-        dataRange()
+            pagiDdataRange()
         
             appendData(resultdiv, responseArr);
         } else {
@@ -124,9 +123,21 @@ async function search() {
     loadingdiv.hide();
 }
 
+async function searchNext(nextLink){
+
+    var response_data = await $.get(currentSearch, {  next_url_endpoint:nextLink,count:'true',skip:skipVal}, 'json');
+
+    latestResponse = JSON.parse(response_data);
+    responseArr.value=responseArr.value.concat(latestResponse.value);
+    responseArr.nextParamerters=latestResponse.nextParamerters;
+    pagiDdataRange()
+        
+    appendData(resultdiv, responseArr);
+}
+
 //Iterate volume names from API to drop down menu
 async function start() {
-    // currentSearch=search_api
+    currentSearch=search_api
     handleJsonFile()
     const urlParams = new URLSearchParams(location.search);
     volSelect = urlParams.get('q');
@@ -182,6 +193,35 @@ function pos_to_neg(num){
     return -Math.abs(num);
 }
 
+function pagiDdataRange() {
+    rangeDiv.empty()
+    var leftButtonLi = document.createElement("li");
+    leftButtonLi.innerHTML='<span class="left-range-bt-span"><<</span>'
+    var dataRangeText = document.createElement("p");
+    dataRangeText.classList.add("data-range-text");
+    var rightButtonLi = document.createElement("li");
+    rightButtonLi.innerHTML='<span class="right-range-bt-span">>></span>'
+
+    nextParamerters=responseArr["@search.nextPageParameters"]
+
+    rightButtonLi.onclick =function() {
+        let key="value"
+        searchUrl=responseArr["@odata.nextLink"]
+        searchNext(searchUrl)
+        
+    }
+
+    leftButtonLi.onclick =function() {
+        appendData(resultdiv,prevResponse)
+    }
+
+    dataRangeText.innerHTML=nextParamerters.skip
+
+    rangeDiv.append(leftButtonLi)
+    rangeDiv.append(dataRangeText)
+    rangeDiv.append(rightButtonLi)
+}
+
 function dataRange(){
     rangeDiv.empty()
     var leftButtonLi = document.createElement("li");
@@ -198,7 +238,7 @@ function dataRange(){
     if(skipVal==undefined ||skipVal==0){
         leftButtonLi.classList.add("disabled")
     }
-    if(!responseArr["@odata.nextLink"]){
+    if(!nextParamerters){
         lastRange=count
         rightButtonLi.classList.add("disabled")
     }else{

@@ -4,7 +4,7 @@ const element = document.getElementById("pagination");
 //calling function with passing parameters and adding inside element which is ul tag
 function createPagination(totalPages, page, ifSkip){
   let liTag = '';
-  let active;
+  let active='';
   let beforePage = page - 1;
   let afterPage = page + 1;
   

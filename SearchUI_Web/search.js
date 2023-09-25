@@ -1,5 +1,5 @@
-var search_api = "https://nasuni-searchfunction-app-02fc.azurewebsites.net/api/search" ; 
-var volume_api = "https://nasuni-searchfunction-app-02fc.azurewebsites.net/api/get_volume" ;
+var search_api = "https://nasuni-searchfunction-app-4f92.azurewebsites.net/api/search" ; 
+var volume_api = "https://nasuni-searchfunction-app-4f92.azurewebsites.net/api/get_volume" ; 
 var prevSearch=""
 var nextSearch=""
 var currentSearch=""
@@ -113,7 +113,7 @@ async function search() {
             console.log(responseArr)
             console.log(responseArr["@odata.nextLink"])
             
-            pagiDdataRange()
+            // pagiDdataRange()
         
             appendData(resultdiv, responseArr);
         } else {
@@ -130,7 +130,7 @@ async function searchNext(nextLink){
     latestResponse = JSON.parse(response_data);
     responseArr.value=responseArr.value.concat(latestResponse.value);
     responseArr.nextParamerters=latestResponse.nextParamerters;
-    pagiDdataRange()
+    // pagiDdataRange()
         
     appendData(resultdiv, responseArr);
 }
@@ -193,34 +193,34 @@ function pos_to_neg(num){
     return -Math.abs(num);
 }
 
-function pagiDdataRange() {
-    rangeDiv.empty()
-    var leftButtonLi = document.createElement("li");
-    leftButtonLi.innerHTML='<span class="left-range-bt-span"><<</span>'
-    var dataRangeText = document.createElement("p");
-    dataRangeText.classList.add("data-range-text");
-    var rightButtonLi = document.createElement("li");
-    rightButtonLi.innerHTML='<span class="right-range-bt-span">>></span>'
+// function pagiDdataRange() {
+//     rangeDiv.empty()
+//     var leftButtonLi = document.createElement("li");
+//     leftButtonLi.innerHTML='<span class="left-range-bt-span"><<</span>'
+//     var dataRangeText = document.createElement("p");
+//     dataRangeText.classList.add("data-range-text");
+//     var rightButtonLi = document.createElement("li");
+//     rightButtonLi.innerHTML='<span class="right-range-bt-span">>></span>'
 
-    nextParamerters=responseArr["@search.nextPageParameters"]
+//     nextParamerters=responseArr["@search.nextPageParameters"]
 
-    rightButtonLi.onclick =function() {
-        let key="value"
-        searchUrl=responseArr["@odata.nextLink"]
-        searchNext(searchUrl)
+//     rightButtonLi.onclick =function() {
+//         let key="value"
+//         searchUrl=responseArr["@odata.nextLink"]
+//         searchNext(searchUrl)
         
-    }
+//     }
 
-    leftButtonLi.onclick =function() {
-        appendData(resultdiv,prevResponse)
-    }
+//     leftButtonLi.onclick =function() {
+//         appendData(resultdiv,prevResponse)
+//     }
 
-    dataRangeText.innerHTML=nextParamerters.skip
+//     dataRangeText.innerHTML=nextParamerters.skip
 
-    rangeDiv.append(leftButtonLi)
-    rangeDiv.append(dataRangeText)
-    rangeDiv.append(rightButtonLi)
-}
+//     rangeDiv.append(leftButtonLi)
+//     rangeDiv.append(dataRangeText)
+//     rangeDiv.append(rightButtonLi)
+// }
 
 function dataRange(){
     rangeDiv.empty()
@@ -375,11 +375,9 @@ function appendData(resultdiv, data)
             }
 
             stop();
-
         } 
-
-        paginationTrigger(data)
     } 
+    paginationTrigger(data)
 }
 
 
@@ -393,8 +391,18 @@ function paginationTrigger(data) {
         var paginationDiv = document.getElementById('pagination');
         var ul = document.createElement('ul')
         paginationDiv.append(ul);
-
+        // console.log (totalPages,page);
+        if (page==totalPages)
+        {   
+            resultdiv.hide()
+            loadingdiv.show()
+            searchUrl=responseArr["@odata.nextLink"]
+            searchNext(searchUrl)
+            totalPages+=10
+        }
         createPagination(totalPages, page);
+        resultdiv.show()
+        loadingdiv.hide()
     }
 }
 

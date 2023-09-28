@@ -27,13 +27,13 @@ function createPagination(totalPages, page, ifSkip){
     afterPage  = afterPage + 1;
   }
 
+  liTag += `<li class="numb ${active}" id="numb first"><span class="activeSpan" onclick="paginationData(1)">1</span></li>`;
+
   for (var plength = beforePage; plength <= afterPage; plength++) {
-    if (plength > totalPages) { //if plength is greater than totalPage length then continue
+    if ((plength > totalPages) || (plength < 2)){ //if plength is greater than totalPage length then continue
       continue;
     }
-    if (plength == 0) { //if plength is 0 than add +1 in plength value
-      plength = plength + 1;
-    }
+
     if(page == plength){ //if page is equal to plength than assign active string in the active variable
       active = "active";
     }else{ //else leave empty to the active variable

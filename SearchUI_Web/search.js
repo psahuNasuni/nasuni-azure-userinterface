@@ -112,9 +112,7 @@ async function search() {
             // nextSearch=responseArr["@odata.nextLink"]
             console.log(responseArr)
             console.log(responseArr["@odata.nextLink"])
-            
-            // pagiDdataRange()
-        
+                    
             appendData(resultdiv, responseArr);
         } else {
             noresults.show();
@@ -130,7 +128,6 @@ async function searchNext(nextLink){
     latestResponse = JSON.parse(response_data);
     responseArr.value=responseArr.value.concat(latestResponse.value);
     responseArr.nextParamerters=latestResponse.nextParamerters;
-    // pagiDdataRange()
         
     appendData(resultdiv, responseArr);
 }
@@ -193,34 +190,6 @@ function pos_to_neg(num){
     return -Math.abs(num);
 }
 
-// function pagiDdataRange() {
-//     rangeDiv.empty()
-//     var leftButtonLi = document.createElement("li");
-//     leftButtonLi.innerHTML='<span class="left-range-bt-span"><<</span>'
-//     var dataRangeText = document.createElement("p");
-//     dataRangeText.classList.add("data-range-text");
-//     var rightButtonLi = document.createElement("li");
-//     rightButtonLi.innerHTML='<span class="right-range-bt-span">>></span>'
-
-//     nextParamerters=responseArr["@search.nextPageParameters"]
-
-//     rightButtonLi.onclick =function() {
-//         let key="value"
-//         searchUrl=responseArr["@odata.nextLink"]
-//         searchNext(searchUrl)
-        
-//     }
-
-//     leftButtonLi.onclick =function() {
-//         appendData(resultdiv,prevResponse)
-//     }
-
-//     dataRangeText.innerHTML=nextParamerters.skip
-
-//     rangeDiv.append(leftButtonLi)
-//     rangeDiv.append(dataRangeText)
-//     rangeDiv.append(rightButtonLi)
-// }
 
 function dataRange(){
     rangeDiv.empty()
@@ -228,12 +197,9 @@ function dataRange(){
     var dataRangeText = document.createElement("p");
     dataRangeText.classList.add("data-range-text");
     var rightButtonLi = document.createElement("li");
-    // lastRange=parseInt(responseArr["@odata.count"])
     nextParamerters=responseArr["@search.nextPageParameters"]
-    // console.log(nextParamerters.count)
-    // console.log(nextParamerters.skip)
+ 
     var count=parseInt(responseArr["@odata.count"])
-    // var skip=parseInt(nextParamerters.skip)
     var total=parseInt(count/skip)
     if(skipVal==undefined ||skipVal==0){
         leftButtonLi.classList.add("disabled")
@@ -323,23 +289,18 @@ function appendData(resultdiv, data)
         var spanDiv = document.createElement('div');
         resultBox.classList.add("result-box");
         spanDiv.classList.add("result-content");
-        console.log(shareData)
     
         if (Object.keys(data.value[0]).length >= 0) 
         {
-            console.log(Object.keys(shareData.shares).length)
-
             file_Share_url=""
             let sharePathExist = false
 
             for(var j=0;j<shareData.shares.length;j++)
             {
                 var locationStr=data.value[i].file_path
-
                 var sharePath=Object.values(shareData.shares[j])[0]
 
                 shareName=Object.keys(shareData.shares[j])[0]
-
                 erpFuncResponse=extractRightPath(locationStr,sharePath)  
 
                 if(erpFuncResponse!=null)
@@ -349,7 +310,6 @@ function appendData(resultdiv, data)
                     sharePathExist=true
                     break
                 }
-                
             }
 
             if(!sharePathExist)
@@ -391,7 +351,7 @@ function paginationTrigger(data) {
         var paginationDiv = document.getElementById('pagination');
         var ul = document.createElement('ul')
         paginationDiv.append(ul);
-        // console.log (totalPages,page);
+
         if (page==totalPages)
         {   
             resultdiv.hide()
@@ -401,8 +361,8 @@ function paginationTrigger(data) {
             totalPages+=10
         }
         createPagination(totalPages, page);
-        resultdiv.show()
         loadingdiv.hide()
+        resultdiv.show()
     }
 }
 

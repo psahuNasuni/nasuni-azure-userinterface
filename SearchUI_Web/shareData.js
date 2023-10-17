@@ -29,11 +29,9 @@ function readJsonFile(filename, callback) {
       }
   
       console.log('JSON data:', jsonData);
-      console.log(Object.keys(jsonData.shares).length)
+      
       shareGet(jsonData)
-      // Access the data using jsonData as a dictionary
-      // Example: console.log(jsonData.key);
-    });
+      });
 
     readJsonFile(nmcFilename, function (error, jsonDataNmc) {
         if (error) {
@@ -44,8 +42,7 @@ function readJsonFile(filename, callback) {
         console.log('JSON data:', jsonDataNmc);
         console.log(Object.keys(jsonDataNmc).length)
         applianceData(jsonDataNmc.web_access_appliance_address)
-        // Access the data using jsonData as a dictionary
-        // Example: console.log(jsonData.key);
+
       });
     
   }

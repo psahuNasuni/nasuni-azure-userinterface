@@ -1,5 +1,5 @@
-var search_api = "https://nasuni-searchfunction-app-4f92.azurewebsites.net/api/search" ; 
-var volume_api = "https://nasuni-searchfunction-app-4f92.azurewebsites.net/api/get_volume" ; 
+var search_api = "https://nasuni-searchfunction-app-333c.azurewebsites.net/api/search" ; 
+var volume_api = "https://nasuni-searchfunction-app-333c.azurewebsites.net/api/get_volume" ; 
 var prevSearch=""
 var nextSearch=""
 var currentSearch=""
@@ -294,14 +294,16 @@ function appendData(resultdiv, data)
         {
             file_Share_url=""
             let sharePathExist = false
+            volume=data.value[i].volume_name
 
-            for(var j=0;j<shareData.shares.length;j++)
+            for(var j=0;j<shareData[volume].shares.length;j++)
             {
                 var locationStr=data.value[i].file_path
-                var sharePath=Object.values(shareData.shares[j])[0]
+                var fileLocation=data.value[i].file_location
+                var sharePath=Object.values(shareData[volume].shares[j])[0]
 
-                shareName=Object.keys(shareData.shares[j])[0]
-                erpFuncResponse=extractRightPath(locationStr,sharePath)  
+                shareName=Object.keys(shareData[volume].shares[j])[0]
+                erpFuncResponse=extractRightPath(locationStr,sharePath,fileLocation)  
 
                 if(erpFuncResponse!=null)
                 {
@@ -367,16 +369,17 @@ function paginationTrigger(data) {
 }
 
 // Matching share path with file path
-function extractRightPath(mainString, sharePath) {
+function extractRightPath(mainString, sharePath, fileLocation) {
     const regex = new RegExp(`(${sharePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(.*)`);
     let matchString=mainString.replace(/%20/g,' ');
     const match = regex.exec(matchString);
-  
+    let filerIp=fileLocation.split('/')[2]
+    
     if (match) {
       rightPart = match[2].trim();
       console.log(rightPart)
         
-        file_Share_url="https://"+edgeAppliance+"/fs/view/"+shareName+rightPart
+        file_Share_url="https://"+filerIp+"/fs/view/"+shareName+rightPart
         return true
     }
   

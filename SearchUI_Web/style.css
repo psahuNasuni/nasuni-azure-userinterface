@@ -24,7 +24,17 @@ body {
     white-space: nowrap;
 	border-style: none;
 }
-
+.logo2 {
+	position: fixed;
+    padding: 5px;
+    top: 0;
+    left: 8%;
+    line-height: inherit;
+    white-space: nowrap;
+    border-style: none;
+    margin-left: 70px;
+	height: 10px;
+}
 header {
 	position: fixed;
 	top:0;

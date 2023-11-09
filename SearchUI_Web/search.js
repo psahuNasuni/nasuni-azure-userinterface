@@ -277,6 +277,9 @@ function applianceData(res){
     edgeAppliance=res
 }
 
+function getHostname(res){
+    hostNames=res
+}
 
 //Appending all the results to the main resultdiv 
 function appendData(resultdiv, data) 
@@ -320,9 +323,11 @@ function appendData(resultdiv, data)
                     let filePathList = data.value[i].file_path.split('blob.core.windows.net')[1]
                     filePath=filePathList.split('/').slice(2).join('/')
                     ipAddress=data.value[i].file_location.split('/')[2]
-
+                    
+                    let hostName=hostNames[ipAddress] || ipAddress
                     file_loc = "https://" + ipAddress + "/fs/view/" + volume + "/" + filePath
-                    file_url=file_loc.trim().replace(/%20/g,' ');
+                    file_redirection_link="https://" + hostName + "/fs/view/" + volume + "/" + filePath
+                    file_url=file_redirection_link.trim().replace(/%20/g,' ');
                 }
             
             link.innerHTML = "<a class='elasti_link result-title' href=" + file_loc + ">" + file_url + "</a><br>";

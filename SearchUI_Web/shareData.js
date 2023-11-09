@@ -22,6 +22,8 @@ function readJsonFile(filename, callback) {
   function handleJsonFile() {
     const shareFilename = 'share_data.json'; // Replace with the desired JSON file name
     const nmcFilename = "nmc_details.json";
+    const hostFilename="hostnames.json";
+
     readJsonFile(shareFilename, function (error, jsonData) {
       if (error) {
         console.error('Error reading JSON file:', error);
@@ -44,7 +46,14 @@ function readJsonFile(filename, callback) {
         applianceData(jsonDataNmc.web_access_appliance_address)
 
       });
-    
+      readJsonFile(hostFilename, function (error, hostData) {
+        if (error) {
+          console.error('Error reading JSON file:', error);
+          return;
+        }
+        
+        getHostname(hostData)
+        });
   }
 
   

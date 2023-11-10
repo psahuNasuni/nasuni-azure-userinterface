@@ -311,7 +311,7 @@ function appendData(resultdiv, data)
                 if(erpFuncResponse!=null)
                 {
                     file_url=file_Share_url
-                    file_loc=file_Share_url.trim().replace(/ /g,'%20');
+                    file_loc=fileShareRedirectionUrl.trim().replace(/ /g,'%20');
                     sharePathExist=true
                     break
                 }
@@ -379,12 +379,13 @@ function extractRightPath(mainString, sharePath, fileLocation) {
     let matchString=mainString.replace(/%20/g,' ');
     const match = regex.exec(matchString);
     let filerIp=fileLocation.split('/')[2]
+    let hostName=hostNames[filerIp] || filerIp
     
     if (match) {
-      rightPart = match[2].trim();
-      console.log(rightPart)
-        
-        file_Share_url="https://"+filerIp+"/fs/view/"+shareName+rightPart
+        rightPart = match[2].trim();
+        console.log(rightPart)
+        fileShareRedirectionUrl="https://"+filerIp+"/fs/view/"+shareName+rightPart
+        file_Share_url="https://"+hostName+"/fs/view/"+shareName+rightPart
         return true
     }
   

@@ -107,7 +107,7 @@ resource "azurerm_application_insights" "app_insights" {
 }
 
 resource "azurerm_service_plan" "app_service_plan" {
-  name                = "nasuni-app-service-plan-${random_id.unique_SearchUI_id.hex}"
+  name                = "nasuni-app-search-service-plan-${random_id.unique_SearchUI_id.hex}"
   resource_group_name = data.azurerm_resource_group.acs_resource_group.name
   location            = data.azurerm_resource_group.acs_resource_group.location
   os_type             = "Linux"

@@ -41,7 +41,7 @@ searchbox.keyup(function() {
 function dropDownData(period) {
     volSelect = ""
     volume = period;
-    console.log(period);
+    console.log(period ,"and its subsequent sso-url is:",ssoData[volume]);
     if (searchbox.val() != "") {
         search();
     }
@@ -279,6 +279,10 @@ function applianceData(res){
 
 function getHostname(res){
     hostNames=res
+}
+
+function ssoGet(res){
+    ssoData=res
 }
 
 //Appending all the results to the main resultdiv 

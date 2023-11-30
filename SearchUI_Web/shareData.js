@@ -23,6 +23,7 @@ function readJsonFile(filename, callback) {
     const shareFilename = 'share_data.json'; // Replace with the desired JSON file name
     const nmcFilename = "nmc_details.json";
     const hostFilename="hostnames.json";
+    const ssoFilename="sso.json";
 
     readJsonFile(shareFilename, function (error, jsonData) {
       if (error) {
@@ -54,7 +55,16 @@ function readJsonFile(filename, callback) {
         
         getHostname(hostData)
         });
+        readJsonFile(ssoFilename, function (error, ssoData) {
+          if (error) {
+            console.error('Error reading JSON file:', error);
+            return;
+          }
+          
+          ssoGet(ssoData)
+          });
   }
+
 
   
 

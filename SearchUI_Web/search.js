@@ -1,5 +1,5 @@
-var search_api = "https://nasuni-searchfunction-app-333c.azurewebsites.net/api/search" ; 
-var volume_api = "https://nasuni-searchfunction-app-333c.azurewebsites.net/api/get_volume" ; 
+var search_api = "https://nasuni-searchfunction-app-ae20.azurewebsites.net/api/search" ; 
+var volume_api = "https://nasuni-searchfunction-app-ae20.azurewebsites.net/api/get_volume" ; 
 var prevSearch=""
 var nextSearch=""
 var currentSearch=""
@@ -45,12 +45,33 @@ function dropDownData(period) {
     if (searchbox.val() != "") {
         search();
     }
+    if (ssoData[volume]!="undefined"){
+        ssoTrigger(ssoData[volume])
+    }
+    
 }
 
 function paginationData(period) {
     pagiResults = period;
     console.log(pagiResults + "   pagination page number");
     indexChange();
+}
+
+
+function ssoTrigger(url) {
+    let newWindow = window.open(url, "_blank", "width=0,height=0,top=0,left=0");
+
+  // Set a timeout to close the window after 30 seconds
+  setTimeout(() => {
+    newWindow.close();
+  }, 30000);
+
+  // Check the URL status and log it to the console after the window is closed
+  newWindow.addEventListener("beforeunload", () => {
+    fetch(url)
+      .then((response) => response.status)
+      .then((status) => console.log(`URL status: ${status}`));
+  });
 }
 
 async function search() {

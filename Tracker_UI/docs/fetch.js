@@ -22,6 +22,7 @@ function readTextFile(file, callback) {
 //usage:
 function trackerStart(){
     readTextFile(trackerDoc, function(text){
+        ssoGet()       
         data = JSON.parse(text);
         result = Object.keys(data).map((key) => [Number(key), data[key]]);
         console.log(data.INTEGRATIONS);
@@ -33,6 +34,10 @@ function trackerStart(){
 
         
     });
+}
+
+function ssoGet(res){
+    ssoData=res
 }
 
 function tableAppend(result,volumes) {
@@ -60,25 +65,22 @@ function tableAppend(result,volumes) {
                     var a = document.createElement('a');
                     let button = document.createElement('button');
                     var link = document.createTextNode(source[i]._source.volume);
+                    var volumeName=source[i]._source.volume
                     a.setAttribute("id","anchor");
                     button.appendChild(a)
                     a.appendChild(link)
                     a.href=source[i]._source.default_url+"?q="+source[i]._source.volume
-                    a.target = "_blank"
+                    a.target = "_blank";
+                    handleJsonFile();
+                    a.onclick=function(){
+                    ssoTrigger(ssoData[volumeName])
+                }
                     newCell.appendChild(a);
                 }
-                
+   
             }
-            
-           
-
         }
-
-
     }
-    
-    
-    
 
 
 

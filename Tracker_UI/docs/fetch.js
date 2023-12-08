@@ -73,7 +73,9 @@ function tableAppend(result,volumes) {
                     a.target = "_blank";
                     handleJsonFile();
                     a.onclick=function(){
+                    if(ssoData[volume]!="undefined") { 
                     ssoTrigger(ssoData[volumeName])
+                    }
                 }
                     newCell.appendChild(a);
                 }

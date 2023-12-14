@@ -4,7 +4,7 @@ var volumes = [];
 var services = [];
 var rowIndex = 0;
 var source;
-var schedulerName="";
+var schedulerName="nacscheduler712";
 var trackerDoc = schedulerName+"_tracker.json";
 
 function readTextFile(file, callback) {
@@ -65,7 +65,7 @@ function tableAppend(result,volumes) {
                     var a = document.createElement('a');
                     let button = document.createElement('button');
                     var link = document.createTextNode(source[i]._source.volume);
-                    var volumeName=source[i]._source.volume
+                    let volumeName=source[i]._source.volume
                     a.setAttribute("id","anchor");
                     button.appendChild(a)
                     a.appendChild(link)
